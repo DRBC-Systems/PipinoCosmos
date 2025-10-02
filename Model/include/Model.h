@@ -6,10 +6,21 @@
 #include <QVector>
 #include <QObject>
 
+struct MultipleChoiceOption {
+    QString text;
+    bool isCorrect;
+    
+    MultipleChoiceOption(const QString& t = "", bool correct = false)
+        : text(t), isCorrect(correct) {}
+};
+
 struct Problem {
     QString name;
     QString description;
     QString difficulty;
+    QString problemStatement;
+    QString theoryContent;
+    QVector<MultipleChoiceOption> choices;
     
     Problem(const QString& n = "", const QString& desc = "", const QString& diff = "Easy") 
         : name(n), description(desc), difficulty(diff) {}
@@ -49,6 +60,17 @@ public:
     
     // Initialize with sample data
     void initializeSampleData();
+    
+    // Problem content methods
+    QString getProblemStatement(int unitIndex, int problemIndex) const;
+    QString getTheoryContent(int unitIndex, int problemIndex) const;
+    QVector<MultipleChoiceOption> getMultipleChoiceOptions(int unitIndex, int problemIndex) const;
+    int getCorrectChoiceIndex(int unitIndex, int problemIndex) const;
+    
+    // Utility methods for string conversion
+    QString unitProblemToString(int unitIndex, int problemIndex) const;
+    std::string qStringToStdString(const QString& qstr) const;
+    QString stdStringToQString(const std::string& str) const;
 
 signals:
     void unitsChanged();

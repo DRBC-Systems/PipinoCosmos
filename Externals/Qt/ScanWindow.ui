@@ -1,215 +1,143 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>scanWindow</class>
- <widget class="QDialog" name="scanWindow">
+ <class>ScanWindow</class>
+ <widget class="QDialog" name="ScanWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>481</width>
+    <width>480</width>
     <height>640</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Scan Problem</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QDialog {
     background-color: rgb(52, 21, 57);
 }</string>
   </property>
-  <widget class="QWidget" name="mWindow" native="true">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>480</width>
-     <height>640</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QWidget {
-    background-color: rgb(52, 21, 57);
-}</string>
-   </property>
-   <widget class="QPushButton" name="theoryButton">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>110</y>
-      <width>290</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Comic Sans MS</family>
-      <pointsize>24</pointsize>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
-    background-color: rgb(52, 21, 57);
-    border: 2px solid white;
-    border-radius: 6px;
-    color: white;   /* &lt;-- makes the text white */
-}</string>
-    </property>
-    <property name="text">
-     <string>CheckTheory ; )</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="pipinosWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>110</y>
-      <width>151</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="textFormat">
-     <enum>Qt::TextFormat::PlainText</enum>
-    </property>
-    <property name="pixmap">
-     <pixmap>../../../../pipinosNEW.png</pixmap>
-    </property>
-    <property name="scaledContents">
-     <bool>true</bool>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-    </property>
-    <property name="wordWrap">
-     <bool>false</bool>
-    </property>
-    <property name="margin">
-     <number>-20</number>
-    </property>
-    <property name="indent">
-     <number>-10</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="u">
+   <widget class="QLabel" name="unitLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
       <width>460</width>
-      <height>90</height>
+      <height>50</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Comic Sans MS</family>
-      <pointsize>30</pointsize>
+      <pointsize>16</pointsize>
+      <bold>true</bold>
      </font>
     </property>
     <property name="styleSheet">
      <string notr="true">QLabel {
-    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border: 2px solid rgb(255, 140, 0);
     border-radius: 5px;
     padding: 6px;
-    color: rgb(255, 140, 0);                 /* orange text */
-    background-color: rgb(80, 40, 120);      /* darker purple background */
+    color: rgb(255, 140, 0);
+    background-color: rgb(80, 40, 120);
 }</string>
     </property>
     <property name="text">
-     <string>UNIT 1.1</string>
+     <string>Unit: Geometry, Problem: Triangles</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="problemLabel">
+   <widget class="QLabel" name="instructionLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>220</y>
+      <y>80</y>
       <width>460</width>
-      <height>251</height>
+      <height>80</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <family>Calibri</family>
+      <family>Comic Sans MS</family>
       <pointsize>14</pointsize>
      </font>
     </property>
     <property name="styleSheet">
      <string notr="true">QLabel {
-    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border: 2px solid rgb(255, 140, 0);
     border-radius: 5px;
-    padding: 6px;
-    color: rgb(255, 140, 0);                 /* orange text */
-    background-color: rgb(80, 40, 120);      /* darker purple background */
+    padding: 10px;
+    color: rgb(255, 140, 0);
+    background-color: rgb(70, 30, 80);
 }</string>
     </property>
     <property name="text">
-     <string>Problem ....</string>
+     <string>📷 Scan your handwritten problem or take a photo of a problem from your textbook</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="backButton">
+   <widget class="QFrame" name="scanFrame">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>580</y>
-      <width>225</width>
-      <height>50</height>
+      <y>180</y>
+      <width>460</width>
+      <height>280</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>Calibri</family>
-      <pointsize>30</pointsize>
-     </font>
-    </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton {
-    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
-    border-radius: 5px;
-    padding: 6px;
-    color: rgb(255, 140, 0);                 /* orange text */
-    background-color: rgb(80, 40, 120);      /* darker purple background */
+     <string notr="true">QFrame {
+    border: 3px dashed rgb(255, 140, 0);
+    border-radius: 10px;
+    background-color: rgb(60, 25, 70);
 }</string>
     </property>
-    <property name="text">
-     <string>←</string>
+    <property name="frameShape">
+     <enum>QFrame::Shape::StyledPanel</enum>
     </property>
-   </widget>
-   <widget class="QPushButton" name="settingsButton">
-    <property name="geometry">
-     <rect>
-      <x>245</x>
-      <y>580</y>
-      <width>225</width>
-      <height>50</height>
-     </rect>
+    <property name="frameShadow">
+     <enum>QFrame::Shadow::Raised</enum>
     </property>
-    <property name="font">
-     <font>
-      <family>Calibri</family>
-      <pointsize>24</pointsize>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
-    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
-    border-radius: 5px;
-    padding: 6px;
-    color: rgb(255, 140, 0);                 /* orange text */
-    background-color: rgb(80, 40, 120);      /* darker purple background */
+    <widget class="QLabel" name="scanPlaceholder">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>80</y>
+       <width>360</width>
+       <height>120</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Comic Sans MS</family>
+       <pointsize>18</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+    border: none;
+    color: rgb(200, 120, 50);
+    background-color: transparent;
 }</string>
-    </property>
-    <property name="text">
-     <string>⚙️</string>
-    </property>
+     </property>
+     <property name="text">
+      <string>📸
+
+Tap "Scan" to capture
+your problem</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="scanButton">
     <property name="geometry">
@@ -217,29 +145,138 @@
       <x>10</x>
       <y>480</y>
       <width>460</width>
-      <height>90</height>
+      <height>60</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Comic Sans MS</family>
-      <pointsize>24</pointsize>
+      <pointsize>16</pointsize>
+      <bold>true</bold>
      </font>
     </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
-    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
-    border-radius: 5px;
-    padding: 6px;
-    color: rgb(255, 140, 0);                 /* orange text */
-    background-color: rgb(80, 40, 120);      /* darker purple background */
+    border: 3px solid rgb(255, 140, 0);
+    border-radius: 10px;
+    padding: 10px;
+    color: rgb(255, 140, 0);
+    background-color: rgb(80, 40, 120);
+}
+QPushButton:hover {
+    background-color: rgb(90, 45, 130);
+    border: 3px solid rgb(255, 160, 40);
+}
+QPushButton:pressed {
+    background-color: rgb(70, 35, 110);
 }</string>
     </property>
     <property name="text">
-     <string>Scan Your Answer 📷</string>
+     <string>📷 Scan Problem</string>
     </property>
    </widget>
-  </widget>
+   <widget class="QPushButton" name="theoryButton">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>550</y>
+      <width>220</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Comic Sans MS</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border: 2px solid rgb(255, 140, 0);
+    border-radius: 8px;
+    padding: 8px;
+    color: rgb(255, 140, 0);
+    background-color: rgb(80, 40, 120);
+}
+QPushButton:hover {
+    background-color: rgb(90, 45, 130);
+}
+QPushButton:pressed {
+    background-color: rgb(70, 35, 110);
+}</string>
+    </property>
+    <property name="text">
+     <string>📚 View Theory</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="backButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>600</y>
+      <width>220</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Comic Sans MS</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border: 2px solid rgb(255, 140, 0);
+    border-radius: 6px;
+    padding: 4px;
+    color: rgb(255, 140, 0);
+    background-color: rgb(80, 40, 120);
+}
+QPushButton:hover {
+    background-color: rgb(90, 45, 130);
+}
+QPushButton:pressed {
+    background-color: rgb(70, 35, 110);
+}</string>
+    </property>
+    <property name="text">
+     <string>← Back</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="settingsButton">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>600</y>
+      <width>220</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Comic Sans MS</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border: 2px solid rgb(255, 140, 0);
+    border-radius: 6px;
+    padding: 4px;
+    color: rgb(255, 140, 0);
+    background-color: rgb(80, 40, 120);
+}
+QPushButton:hover {
+    background-color: rgb(90, 45, 130);
+}
+QPushButton:pressed {
+    background-color: rgb(70, 35, 110);
+}</string>
+    </property>
+    <property name="text">
+     <string>⚙ Settings</string>
+    </property>
+   </widget>
  </widget>
  <resources/>
  <connections/>

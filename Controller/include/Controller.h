@@ -28,12 +28,22 @@ public:
 
 public slots:
     void onProblemSelected(int unitIndex, int problemIndex);
+    void onBackButtonClicked();
+    void onSettingsButtonClicked();
+    void onScanButtonClicked();
+    void onTheoryButtonClicked();
+    void onChoiceSelected(int choiceIndex);
 
 private:
     Model* model;
     View* view;
     
+    // Current context for navigation
+    int currentUnitIndex;
+    int currentProblemIndex;
+    
     void connectSignals();
+    void logUserAction(const QString& action, const QString& details = "");
 };
 
 #endif // CONTROLLER_H
