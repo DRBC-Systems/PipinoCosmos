@@ -39,3 +39,19 @@
 
 # debug information files
 *.dwo
+
+# Ignore Visual Studio files
+.vscode/
+*.vcxproj*
+*.sln
+*.user
+
+# Ignore build directory
+build/
+*/build/
+
+# Ignore CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
