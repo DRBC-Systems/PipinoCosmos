@@ -42,7 +42,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="u">
+   <widget class="QLabel" name="settinsLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -67,7 +67,7 @@
 }</string>
     </property>
     <property name="text">
-     <string>UNIT 1.1</string>
+     <string>SETTINGS</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -119,13 +119,13 @@
     background-color: rgb(80, 40, 120);      /* darker purple background */
 }</string>
     </property>
-    <widget class="QLabel" name="problemLabel">
+    <widget class="QLabel" name="musicLabel">
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>30</y>
-       <width>221</width>
-       <height>51</height>
+       <y>20</y>
+       <width>161</width>
+       <height>50</height>
       </rect>
      </property>
      <property name="font">
@@ -136,21 +136,23 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QLabel {
-    color: rgb(255, 140, 0);                 /* orange text */
+    border: none;           /* remove border */
+    background: transparent; /* optional */
+    /*color: white;           /* or another text color */
 }</string>
      </property>
      <property name="text">
-      <string>Problem ....</string>
+      <string>Music</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="scanButton">
+    <widget class="QPushButton" name="credentialsButton">
      <property name="geometry">
       <rect>
-       <x>250</x>
-       <y>40</y>
+       <x>150</x>
+       <y>410</y>
        <width>171</width>
        <height>61</height>
       </rect>
@@ -158,6 +160,34 @@
      <property name="font">
       <font>
        <family>Comic Sans MS</family>
+       <pointsize>21</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border-radius: 5px;
+    padding: 6px;
+    color: rgb(255, 140, 0);                 /* orange text */
+    background-color: rgb(80, 40, 120);      /* darker purple background */
+}</string>
+     </property>
+     <property name="text">
+      <string>Credentials</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="settingsButton">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>20</y>
+       <width>225</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Calibri</family>
        <pointsize>24</pointsize>
       </font>
      </property>
@@ -171,14 +201,214 @@
 }</string>
      </property>
      <property name="text">
-      <string>Scan Your Answer 📷</string>
+      <string>⚙️</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="settingsButton">
+    <widget class="QLabel" name="sfxLabel">
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>130</y>
+       <x>20</x>
+       <y>90</y>
+       <width>161</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Calibri</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+    border: none;           /* remove border */
+    background: transparent; /* optional */
+    /*color: white;           /* or another text color */
+}</string>
+     </property>
+     <property name="text">
+      <string>SFX</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="textLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>160</y>
+       <width>161</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Calibri</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+    border: none;           /* remove border */
+    background: transparent; /* optional */
+    /*color: white;           /* or another text color */
+}</string>
+     </property>
+     <property name="text">
+      <string>Text Size</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="themesLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>230</y>
+       <width>161</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Calibri</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+    border: none;           /* remove border */
+    background: transparent; /* optional */
+    /*color: white;           /* or another text color */
+}</string>
+     </property>
+     <property name="text">
+      <string>Themes</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="languageLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>300</y>
+       <width>161</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Calibri</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+    border: none;           /* remove border */
+    background: transparent; /* optional */
+    /*color: white;           /* or another text color */
+}</string>
+     </property>
+     <property name="text">
+      <string>Language</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="settingsButton_2">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>90</y>
+       <width>225</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Calibri</family>
+       <pointsize>24</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border-radius: 5px;
+    padding: 6px;
+    color: rgb(255, 140, 0);                 /* orange text */
+    background-color: rgb(80, 40, 120);      /* darker purple background */
+}</string>
+     </property>
+     <property name="text">
+      <string>⚙️</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="settingsButton_3">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>160</y>
+       <width>225</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Calibri</family>
+       <pointsize>24</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border-radius: 5px;
+    padding: 6px;
+    color: rgb(255, 140, 0);                 /* orange text */
+    background-color: rgb(80, 40, 120);      /* darker purple background */
+}</string>
+     </property>
+     <property name="text">
+      <string>⚙️</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="settingsButton_4">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>230</y>
+       <width>225</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Calibri</family>
+       <pointsize>24</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border-radius: 5px;
+    padding: 6px;
+    color: rgb(255, 140, 0);                 /* orange text */
+    background-color: rgb(80, 40, 120);      /* darker purple background */
+}</string>
+     </property>
+     <property name="text">
+      <string>⚙️</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="settingsButton_5">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>300</y>
        <width>225</width>
        <height>50</height>
       </rect>
