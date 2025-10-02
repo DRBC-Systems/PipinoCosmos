@@ -1,7 +1,7 @@
 #include "Model.h"
 
 Model::Model(QObject *parent)
-    : QObject(parent)
+    : QObject(parent), currentUnitIndex(-1), currentProblemIndex(-1)
 {
     initializeSampleData();
 }
@@ -251,4 +251,50 @@ std::string Model::qStringToStdString(const QString& qstr) const
 QString Model::stdStringToQString(const std::string& str) const
 {
     return QString::fromStdString(str);
+}
+
+// Current selection methods implementation
+std::string Model::getCurrentProblem() const
+{
+    // Check if we have a valid current selection
+    if (currentUnitIndex >= 0 && currentUnitIndex < units.size() &&
+        currentProblemIndex >= 0 && currentProblemIndex < units[currentUnitIndex].problems.size()) {
+        
+        // Get the current problem name and convert to std::string
+        const Problem& problem = units[currentUnitIndex].problems[currentProblemIndex];
+        return qStringToStdString(problem.name);
+    }
+    
+    // Return empty string if no valid selection
+    return "No problem selected";
+}
+
+std::string Model::getCurrentDifficulty() const
+{
+    // Check if we have a valid current selection
+    if (currentUnitIndex >= 0 && currentUnitIndex < units.size() &&
+        currentProblemIndex >= 0 && currentProblemIndex < units[currentUnitIndex].problems.size()) {
+        
+        // Get the current problem difficulty and convert to std::string
+        const Problem& problem = units[currentUnitIndex].problems[currentProblemIndex];
+        return qStringToStdString(problem.difficulty);
+    }
+    
+    // Return empty string if no valid selection
+    return "No difficulty selected";
+}
+
+void Model::setCurrentSelection(int unitIndex, int problemIndex)
+{
+    // Validate the indices before setting them
+    if (unitIndex >= 0 && unitIndex < units.size() &&
+        problemIndex >= 0 && problemIndex < units[unitIndex].problems.size()) {
+        
+        currentUnitIndex = unitIndex;
+        currentProblemIndex = problemIndex;
+    } else {
+        // Invalid selection - reset to no selection
+        currentUnitIndex = -1;
+        currentProblemIndex = -1;
+    }
 }

@@ -71,6 +71,11 @@ public:
     QString unitProblemToString(int unitIndex, int problemIndex) const;
     std::string qStringToStdString(const QString& qstr) const;
     QString stdStringToQString(const std::string& str) const;
+    
+    // Current selection methods - returns currently selected problem and difficulty
+    std::string getCurrentProblem() const;    // Returns the name of the currently selected problem
+    std::string getCurrentDifficulty() const; // Returns the difficulty of the currently selected problem
+    void setCurrentSelection(int unitIndex, int problemIndex); // Sets the current selection
 
 signals:
     void unitsChanged();
@@ -78,6 +83,10 @@ signals:
 
 private:
     QVector<Unit> units;
+    
+    // Current selection tracking
+    int currentUnitIndex;    // Currently selected unit index (-1 if none selected)
+    int currentProblemIndex; // Currently selected problem index (-1 if none selected)
 };
 
 #endif // MODEL_H

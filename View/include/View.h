@@ -118,6 +118,7 @@ private:
     void populateMultipleChoiceWindow(int unitIndex, int problemIndex);
     void setChoiceButtonsEnabled(bool enabled);
     void highlightCorrectChoice(int choiceIndex);
+    void resetChoiceButtonStyles();
     
     // Content population methods
     void populateTheoryWindow(int unitIndex, int problemIndex);

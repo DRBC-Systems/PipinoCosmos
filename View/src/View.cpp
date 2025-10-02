@@ -79,6 +79,7 @@ void View::setupMainWindow()
 void View::setupMultipleChoiceWindow()
 {
     multipleChoiceWindow = new QDialog(this);
+    multipleChoiceWindow->setModal(true);
     multipleChoiceUI = new Ui::MultipleChoiceWindow();
     multipleChoiceUI->setupUi(multipleChoiceWindow);
 }
@@ -86,6 +87,7 @@ void View::setupMultipleChoiceWindow()
 void View::setupSettingsWindow()
 {
     settingsWindow = new QDialog(this);
+    settingsWindow->setModal(true);
     settingsUI = new Ui::SettingsWindow();
     settingsUI->setupUi(settingsWindow);
 }
@@ -93,6 +95,7 @@ void View::setupSettingsWindow()
 void View::setupScanWindow()
 {
     scanWindow = new QDialog(this);
+    scanWindow->setModal(true);
     scanUI = new Ui::ScanWindow();
     scanUI->setupUi(scanWindow);
 }
@@ -100,6 +103,7 @@ void View::setupScanWindow()
 void View::setupTheoryWindow()
 {
     theoryWindow = new QDialog(this);
+    theoryWindow->setModal(true);
     theoryUI = new Ui::TheoryWindow();
     theoryUI->setupUi(theoryWindow);
 }
@@ -110,6 +114,7 @@ void View::connectSignals()
     if (multipleChoiceUI) {
         connect(multipleChoiceUI->backButton, &QPushButton::clicked, this, &View::onBackButtonClicked);
         connect(multipleChoiceUI->settingsButton, &QPushButton::clicked, this, &View::onSettingsButtonClicked);
+        connect(multipleChoiceUI->theoryButton, &QPushButton::clicked, this, &View::onTheoryButtonClicked);
         connect(multipleChoiceUI->choiceButton1, &QPushButton::clicked, this, &View::onChoiceButtonClicked);
         connect(multipleChoiceUI->choiceButton2, &QPushButton::clicked, this, &View::onChoiceButtonClicked);
         connect(multipleChoiceUI->choiceButton3, &QPushButton::clicked, this, &View::onChoiceButtonClicked);
@@ -153,6 +158,13 @@ void View::showMultipleChoiceWindow(int unitIndex, int problemIndex)
     currentProblemIndex = problemIndex;
     
     populateMultipleChoiceWindow(unitIndex, problemIndex);
+    
+    // Center the dialog over the main window
+    multipleChoiceWindow->move(
+        this->x() + (this->width() - multipleChoiceWindow->width()) / 2,
+        this->y() + (this->height() - multipleChoiceWindow->height()) / 2
+    );
+    
     multipleChoiceWindow->exec(); // Show as modal dialog
 }
 
@@ -160,6 +172,12 @@ void View::showSettingsWindow(WindowType prevWindow)
 {
     previousWindow = prevWindow;
     currentWindow = WindowType::SettingsWindow;
+    
+    // Center the dialog over the main window
+    settingsWindow->move(
+        this->x() + (this->width() - settingsWindow->width()) / 2,
+        this->y() + (this->height() - settingsWindow->height()) / 2
+    );
     
     settingsWindow->exec(); // Show as modal dialog
 }
@@ -172,6 +190,13 @@ void View::showScanWindow(int unitIndex, int problemIndex)
     currentProblemIndex = problemIndex;
     
     populateScanWindow(unitIndex, problemIndex);
+    
+    // Center the dialog over the main window
+    scanWindow->move(
+        this->x() + (this->width() - scanWindow->width()) / 2,
+        this->y() + (this->height() - scanWindow->height()) / 2
+    );
+    
     scanWindow->exec(); // Show as modal dialog
 }
 
@@ -183,6 +208,13 @@ void View::showTheoryWindow(int unitIndex, int problemIndex, WindowType prevWind
     currentProblemIndex = problemIndex;
     
     populateTheoryWindow(unitIndex, problemIndex);
+    
+    // Center the dialog over the main window
+    theoryWindow->move(
+        this->x() + (this->width() - theoryWindow->width()) / 2,
+        this->y() + (this->height() - theoryWindow->height()) / 2
+    );
+    
     theoryWindow->exec(); // Show as modal dialog
 }
 
@@ -213,12 +245,8 @@ void View::populateMultipleChoiceWindow(int unitIndex, int problemIndex)
     // Reset button states
     setChoiceButtonsEnabled(true);
     
-    // Reset button styles
-    QString defaultStyle = multipleChoiceUI->choiceButton1->styleSheet();
-    multipleChoiceUI->choiceButton1->setStyleSheet(defaultStyle);
-    multipleChoiceUI->choiceButton2->setStyleSheet(defaultStyle);
-    multipleChoiceUI->choiceButton3->setStyleSheet(defaultStyle);
-    multipleChoiceUI->choiceButton4->setStyleSheet(defaultStyle);
+    // Reset button styles to original (remove any green highlighting)
+    resetChoiceButtonStyles();
 }
 
 void View::populateTheoryWindow(int unitIndex, int problemIndex)
@@ -266,7 +294,7 @@ void View::onProblemSelectionChanged()
 
 void View::onBackButtonClicked()
 {
-    // Close the current dialog
+    // Close the current dialog and restore previous state
     QDialog* currentDialog = nullptr;
     
     switch (currentWindow) {
@@ -287,6 +315,8 @@ void View::onBackButtonClicked()
     }
     
     if (currentDialog) {
+        // Restore the previous window state
+        currentWindow = previousWindow;
         currentDialog->accept(); // Close the dialog
     }
     
@@ -362,6 +392,27 @@ void View::highlightCorrectChoice(int choiceIndex)
             "\nQPushButton { border: 3px solid rgb(0, 255, 0); background-color: rgb(0, 150, 0); }";
         correctButton->setStyleSheet(greenStyle);
     }
+}
+
+void View::resetChoiceButtonStyles()
+{
+    if (!multipleChoiceUI) return;
+    
+    // Define the original button style (from the UI file)
+    QString originalStyle = 
+        "QPushButton {\n"
+        "    border: 2px solid rgb(255, 140, 0);\n"
+        "    border-radius: 5px;\n"
+        "    padding: 6px;\n"
+        "    color: rgb(255, 140, 0);\n"
+        "    background-color: rgb(80, 40, 120);\n"
+        "}";
+    
+    // Reset all choice buttons to original style
+    multipleChoiceUI->choiceButton1->setStyleSheet(originalStyle);
+    multipleChoiceUI->choiceButton2->setStyleSheet(originalStyle);
+    multipleChoiceUI->choiceButton3->setStyleSheet(originalStyle);
+    multipleChoiceUI->choiceButton4->setStyleSheet(originalStyle);
 }
 
 // Main window methods (keeping existing functionality)

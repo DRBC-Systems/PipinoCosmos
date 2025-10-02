@@ -2,6 +2,7 @@
 #include "Model.h"
 #include "View.h"
 #include <QDateTime>
+#include <QMessageBox>
 
 Controller::Controller(QObject *parent)
     : QObject(parent)
@@ -32,6 +33,20 @@ void Controller::initializeApplication()
         view->setController(this);
         qDebug() << "Application initialized with" << model->getUnitCount() << "units";
         logUserAction("Application Started", QString("Units available: %1").arg(model->getUnitCount()));
+        
+        // 🧪 TEST THE NEW FUNCTIONS WITH NO SELECTION - Show results in a message box
+        std::string noProblem = model->getCurrentProblem();
+        std::string noDifficulty = model->getCurrentDifficulty();
+        
+        QString noSelectionTest = QString("🧪 TESTING WITH NO SELECTION:\n\n"
+                                         "getCurrentProblem() returned:\n'%1'\n\n"
+                                         "getCurrentDifficulty() returned:\n'%2'\n\n"
+                                         "Now select a problem to test with a selection! 🎯")
+                                 .arg(QString::fromStdString(noProblem))
+                                 .arg(QString::fromStdString(noDifficulty));
+        
+        // Show the test results in a message box
+        QMessageBox::information(nullptr, "Model Function Test - No Selection", noSelectionTest);
     }
 }
 
@@ -41,6 +56,23 @@ void Controller::handleProblemSelection(int unitIndex, int problemIndex)
     
     currentUnitIndex = unitIndex;
     currentProblemIndex = problemIndex;
+    
+    // Update the Model's current selection so getCurrentProblem() and getCurrentDifficulty() work
+    model->setCurrentSelection(unitIndex, problemIndex);
+    
+    // 🧪 TEST THE NEW FUNCTIONS - Show results in a message box
+    std::string currentProblem = model->getCurrentProblem();
+    std::string currentDifficulty = model->getCurrentDifficulty();
+    
+    QString testMessage = QString("🧪 TESTING NEW MODEL FUNCTIONS:\n\n"
+                                 "getCurrentProblem() returned:\n'%1'\n\n"
+                                 "getCurrentDifficulty() returned:\n'%2'\n\n"
+                                 "Functions are working! ✅")
+                         .arg(QString::fromStdString(currentProblem))
+                         .arg(QString::fromStdString(currentDifficulty));
+    
+    // Show the test results in a message box
+    QMessageBox::information(nullptr, "Model Function Test Results", testMessage);
     
     const Unit* unit = model->getUnit(unitIndex);
     if (unit && problemIndex >= 0 && problemIndex < unit->problems.size()) {
