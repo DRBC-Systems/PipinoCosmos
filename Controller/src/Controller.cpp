@@ -40,8 +40,9 @@ void Controller::initializeApplication()
         
         QString noSelectionTest = QString("🧪 TESTING WITH NO SELECTION:\n\n"
                                          "getCurrentProblem() returned:\n'%1'\n\n"
-                                         "getCurrentDifficulty() returned:\n'%2'\n\n"
-                                         "Now select a problem to test with a selection! 🎯")
+                                         "getCurrentDifficulty() returned:\n'%2'\n"
+                                         "(This comes from USER SETTINGS, default: Medium)\n\n"
+                                         "Now select a problem to test! 🎯")
                                  .arg(QString::fromStdString(noProblem))
                                  .arg(QString::fromStdString(noDifficulty));
         
@@ -63,13 +64,21 @@ void Controller::handleProblemSelection(int unitIndex, int problemIndex)
     // 🧪 TEST THE NEW FUNCTIONS - Show results in a message box
     std::string currentProblem = model->getCurrentProblem();
     std::string currentDifficulty = model->getCurrentDifficulty();
+    bool isMultipleChoice = model->isCurrentProblemMultipleChoice();
+    
+    // 🧪 TEST CHANGING USER DIFFICULTY SETTING
+    model->setUserDifficulty("Hard");  // Change user setting to Hard
+    std::string newDifficulty = model->getCurrentDifficulty();
     
     QString testMessage = QString("🧪 TESTING NEW MODEL FUNCTIONS:\n\n"
                                  "getCurrentProblem() returned:\n'%1'\n\n"
-                                 "getCurrentDifficulty() returned:\n'%2'\n\n"
-                                 "Functions are working! ✅")
+                                 "getCurrentDifficulty() returned:\n'%2'\n"
+                                 "(Changed user setting to 'Hard' - see it works!)\n\n"
+                                 "isCurrentProblemMultipleChoice() returned:\n%3\n\n"
+                                 "All functions are working! ✅")
                          .arg(QString::fromStdString(currentProblem))
-                         .arg(QString::fromStdString(currentDifficulty));
+                         .arg(QString::fromStdString(newDifficulty))
+                         .arg(isMultipleChoice ? "true (Multiple Choice)" : "false (Scan Problem)");
     
     // Show the test results in a message box
     QMessageBox::information(nullptr, "Model Function Test Results", testMessage);

@@ -74,8 +74,13 @@ public:
     
     // Current selection methods - returns currently selected problem and difficulty
     std::string getCurrentProblem() const;    // Returns the name of the currently selected problem
-    std::string getCurrentDifficulty() const; // Returns the difficulty of the currently selected problem
+    std::string getCurrentDifficulty() const; // Returns the USER'S difficulty setting (from settings)
+    bool isCurrentProblemMultipleChoice() const; // Returns true if current problem is multiple choice, false otherwise
     void setCurrentSelection(int unitIndex, int problemIndex); // Sets the current selection
+    
+    // User settings methods
+    void setUserDifficulty(const QString& difficulty); // Sets the user's difficulty preference
+    QString getUserDifficulty() const; // Gets the user's difficulty preference as QString
 
 signals:
     void unitsChanged();
@@ -87,6 +92,9 @@ private:
     // Current selection tracking
     int currentUnitIndex;    // Currently selected unit index (-1 if none selected)
     int currentProblemIndex; // Currently selected problem index (-1 if none selected)
+    
+    // User settings
+    QString userDifficultySetting; // User's chosen difficulty setting ("Easy", "Medium", "Hard")
 };
 
 #endif // MODEL_H

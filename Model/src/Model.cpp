@@ -1,7 +1,7 @@
 #include "Model.h"
 
 Model::Model(QObject *parent)
-    : QObject(parent), currentUnitIndex(-1), currentProblemIndex(-1)
+    : QObject(parent), currentUnitIndex(-1), currentProblemIndex(-1), userDifficultySetting("Medium")
 {
     initializeSampleData();
 }
@@ -271,17 +271,22 @@ std::string Model::getCurrentProblem() const
 
 std::string Model::getCurrentDifficulty() const
 {
+    // Return the USER'S difficulty setting (from settings), not the problem's hardcoded difficulty
+    return qStringToStdString(userDifficultySetting);
+}
+
+bool Model::isCurrentProblemMultipleChoice() const
+{
     // Check if we have a valid current selection
     if (currentUnitIndex >= 0 && currentUnitIndex < units.size() &&
         currentProblemIndex >= 0 && currentProblemIndex < units[currentUnitIndex].problems.size()) {
         
-        // Get the current problem difficulty and convert to std::string
-        const Problem& problem = units[currentUnitIndex].problems[currentProblemIndex];
-        return qStringToStdString(problem.difficulty);
+        // Based on your app logic: problems 0, 1, 2 are multiple choice, problems 3+ are scan problems
+        return currentProblemIndex < 3;
     }
     
-    // Return empty string if no valid selection
-    return "No difficulty selected";
+    // Return false if no valid selection (safer default)
+    return false;
 }
 
 void Model::setCurrentSelection(int unitIndex, int problemIndex)
@@ -297,4 +302,21 @@ void Model::setCurrentSelection(int unitIndex, int problemIndex)
         currentUnitIndex = -1;
         currentProblemIndex = -1;
     }
+}
+
+// User settings methods implementation
+void Model::setUserDifficulty(const QString& difficulty)
+{
+    // Validate the difficulty setting
+    if (difficulty == "Easy" || difficulty == "Medium" || difficulty == "Hard") {
+        userDifficultySetting = difficulty;
+    } else {
+        // Invalid difficulty - default to Medium
+        userDifficultySetting = "Medium";
+    }
+}
+
+QString Model::getUserDifficulty() const
+{
+    return userDifficultySetting;
 }
