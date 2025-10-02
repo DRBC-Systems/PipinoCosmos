@@ -58,6 +58,7 @@ void AIService::handleReply(QNetworkReply *reply)
 {
     if(reply->error() == QNetworkReply::NoError)
     {
+        emit errorOccurred(reply->errorString());
         QByteArray response = reply->readAll();
         emit finished(QString(response));
     }
