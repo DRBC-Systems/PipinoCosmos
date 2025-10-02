@@ -26,7 +26,8 @@ set(CMAKE_AUTORCC ON)
 # Find Qt6 Widgets
 # -------------------------------
 # Try to find Qt6 automatically first
-find_package(Qt6 QUIET COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Network Widgets)
+
 
 # If not found, try common installation paths
 if(NOT Qt6_FOUND)
@@ -175,7 +176,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # -------------------------------
 # Link Qt6 Widgets
 # -------------------------------
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Network Qt6::Widgets)
+
 
 # -------------------------------
 # Platform-specific settings
