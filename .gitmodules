@@ -1,0 +1,3 @@
+[submodule "Externals/2025-bootstrap"]
+	path = Externals/2025-bootstrap
+	url = git@github.com:futured-ai/2025-bootstrap.git
