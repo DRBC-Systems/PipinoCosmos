@@ -33,15 +33,30 @@
       <height>90</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Comic Sans MS</family>
+      <pointsize>30</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
     <property name="styleSheet">
      <string notr="true">QLabel {
-    background-color: rgb(52, 21, 57);
-    border: 2px solid orange;
-    border-radius: 6px;
+    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border-radius: 5px;
+    padding: 6px;
+    color: rgb(255, 140, 0);                 /* orange text */
+    background-color: rgb(80, 40, 120);      /* darker purple background */
 }</string>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>PipinoCosmos</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::TextFormat::AutoText</enum>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
   </widget>
