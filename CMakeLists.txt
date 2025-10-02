@@ -48,7 +48,7 @@ if(NOT Qt6_FOUND)
     elseif(APPLE)
         # macOS paths (Qt installer, Homebrew, MacPorts)
         list(APPEND QT6_POSSIBLE_PATHS
-            "~/Qt/6.9.3/macos/lib/cmake/Qt6"
+            "$ENV{HOME}/Qt/6.9.3/clang_64/lib/cmake/Qt6"
             "$ENV{HOME}/Qt/6.7.3/clang_64/lib/cmake/Qt6"
             "$ENV{HOME}/Qt/6.6.3/clang_64/lib/cmake/Qt6"
             "$ENV{HOME}/Qt/6.5.3/clang_64/lib/cmake/Qt6"
