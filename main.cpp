@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     // Run AI tests
     // -----------------------------
     Example example;      // QObject-based, parent is nullptr
-    example.testAI();     // call the AIService tests
+    example.askAI("Give me an lineal equation");     // call the AIService tests
 
     return app.exec();
 }

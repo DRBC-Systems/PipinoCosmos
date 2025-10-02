@@ -21,7 +21,7 @@ public:
 
 signals:
     void finished(const QString &response);
-
+    void errorOccurred(const QString &error);
 private slots:
     void handleReply(QNetworkReply *reply);
 

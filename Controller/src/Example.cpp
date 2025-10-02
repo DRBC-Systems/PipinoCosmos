@@ -1,43 +1,29 @@
 #include "Example.h"
 #include "AIService.h"
-
 #include <QDebug>
-#include <QJsonArray>
-#include <QJsonObject>
 
 Example::Example(QObject *parent) : QObject(parent)
 {
-    // Optional: run tests immediately when object is created
-    // testAI();
+    ai = new AIService(this);  // create AI service
 }
 
-void Example::testAI()
+void Example::askAI(const QString &message)
 {
-    // --- Create AIService instance ---
-    AIService *ai = new AIService(this);  // 'this' is valid because we are in a QObject
-
-    // -----------------------------
-    // Test 1: Prompt
-    // -----------------------------
-    connect(ai, &AIService::finished, [](const QString &response){
-        qDebug() << "AI prompt response:" << response;
+    // Connect finished signal to print only the answer
+    connect(ai, &AIService::finished, this, [](const QString &response){
+        qDebug() << "AI Answer:" << response;  // only the AI's answer
     });
 
-    ai->prompt("What is the capital of Greece?");
-
-    // -----------------------------
-    // Test 2: Chat
-    // -----------------------------
-    QJsonArray messages;
-    messages.append(QJsonObject{{"type", "Human"}, {"text", "Hello AI"}});
-
-    connect(ai, &AIService::finished, [](const QString &response){
-        qDebug() << "AI chat response:" << response;
+    // Optional: connect error signal
+    connect(ai, &AIService::errorOccurred, this, [](const QString &err){
+        qDebug() << "AI Error:" << err;
     });
 
-    ai->chat(messages);
+    // Send the message as a prompt
+    ai->prompt(message);
 
-    // You can add more tests: embeddings, RAG, etc.
-    ai->embeddings("Artificial intelligence in education");
-    ai->rag("Did the Queen turn purple?");
+    // Or if you want to use chat:
+    // QJsonArray messages;
+    // messages.append(QJsonObject{{"type","Human"},{"text", message}});
+    // ai->chat(messages);
 }
