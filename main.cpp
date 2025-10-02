@@ -33,18 +33,32 @@ int main(int argc, char *argv[])
     example.askAI("Give me an lineal equation");     // call the AIService tests
 
 
-    // Generate and print Linear Equations Easy problem
+    // Generate and print Linear Equations Easy problem with multiple choice
     ProblemGenerator problemGenerator;
     
     std::cout << "\n=== AI Problem Generation Test ===" << std::endl;
     
-    // Test Linear Equations Easy
-    QString easyProblem = problemGenerator.generateProblemSync("Linear Equations", "Easy");
+    // Test Linear Equations Easy with multiple choice
+    GeneratedProblem easyProblem = problemGenerator.generateCompleteProblemSync("Linear Equations", "Easy");
     std::cout << "Topic: Linear Equations (Easy)" << std::endl;
-    if (easyProblem.startsWith("Error:") || easyProblem.startsWith("Timeout:")) {
-        std::cout << "Failed: " << easyProblem.toStdString() << std::endl;
+    
+    if (easyProblem.problemStatement.startsWith("Error:") || easyProblem.problemStatement.startsWith("Timeout:")) {
+        std::cout << "Failed: " << easyProblem.problemStatement.toStdString() << std::endl;
     } else {
-        std::cout << "Problem: " << easyProblem.toStdString() << std::endl;
+        std::cout << "Problem: " << easyProblem.problemStatement.toStdString() << std::endl;
+        
+        if (easyProblem.isMultipleChoice && easyProblem.choices.size() == 4) {
+            std::cout << "\nMultiple Choice Options:" << std::endl;
+            for (int i = 0; i < easyProblem.choices.size(); ++i) {
+                std::cout << easyProblem.choices[i].text.toStdString();
+                if (easyProblem.choices[i].isCorrect) {
+                    std::cout << " (CORRECT)";
+                }
+                std::cout << std::endl;
+            }
+        } else {
+            std::cout << "(No multiple choice options generated)" << std::endl;
+        }
     }
     
     // std::cout << "\n--- Additional Tests ---" << std::endl;
