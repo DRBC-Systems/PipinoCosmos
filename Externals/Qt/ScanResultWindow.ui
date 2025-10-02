@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TheoryWindow</class>
- <widget class="QDialog" name="TheoryWindow">
+ <class>scanConfirmWindow</class>
+ <widget class="QDialog" name="scanConfirmWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>481</width>
-    <height>572</height>
+    <height>640</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,17 +32,7 @@
     background-color: rgb(52, 21, 57);
 }</string>
    </property>
-   <widget class="QWidget" name="pipinosWidget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>50</x>
-      <y>140</y>
-      <width>120</width>
-      <height>80</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="theoryTitleLabel">
+   <widget class="QLabel" name="scanResultTitleLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -67,13 +57,13 @@
 }</string>
     </property>
     <property name="text">
-     <string>Theory 1</string>
+     <string>Scan Result</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="theoryLabel">
+   <widget class="QLabel" name="scanResultLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -98,7 +88,7 @@
 }</string>
     </property>
     <property name="text">
-     <string>Theory ...........</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;x+5=5&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
@@ -116,7 +106,7 @@
     <property name="font">
      <font>
       <family>Calibri</family>
-      <pointsize>30</pointsize>
+      <pointsize>22</pointsize>
      </font>
     </property>
     <property name="styleSheet">
@@ -129,10 +119,10 @@
 }</string>
     </property>
     <property name="text">
-     <string>←</string>
+     <string>❌</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="settingsButton">
+   <widget class="QPushButton" name="nextButton">
     <property name="geometry">
      <rect>
       <x>245</x>
@@ -144,7 +134,7 @@
     <property name="font">
      <font>
       <family>Calibri</family>
-      <pointsize>24</pointsize>
+      <pointsize>22</pointsize>
      </font>
     </property>
     <property name="styleSheet">
@@ -157,7 +147,7 @@
 }</string>
     </property>
     <property name="text">
-     <string>⚙️</string>
+     <string>✅</string>
     </property>
    </widget>
   </widget>
