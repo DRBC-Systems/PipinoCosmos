@@ -112,13 +112,15 @@ void AIService::handleReply(QNetworkReply *reply)
 {
     if(reply->error() == QNetworkReply::NoError)
     {
-        emit errorOccurred(reply->errorString());
+        // Success case - only emit finished signal
         QByteArray response = reply->readAll();
         emit finished(QString(response));
     }
     else
     {
+        // Error case - emit errorOccurred signal
         qDebug() << "AIService Error:" << reply->errorString();
+        emit errorOccurred(reply->errorString());
         emit finished(QString("Error: %1").arg(reply->errorString()));
     }
     reply->deleteLater();

@@ -41,6 +41,8 @@ public:
     
     void setController(Controller* controller);
     void setModel(Model* model);
+    // Public refresh to update MC content after async AI generation
+    void refreshMultipleChoice(int unitIndex, int problemIndex);
     
     // Window navigation methods
     void showMainWindow();
@@ -65,9 +67,11 @@ private slots:
     void onProblemSelectionChanged();
     void onBackButtonClicked();
     void onSettingsButtonClicked();
+    void onMainSettingsButtonClicked();
     void onScanButtonClicked();
     void onTheoryButtonClicked();
     void onChoiceButtonClicked();
+    void onDifficultyChanged(int index);
 
 private:
     // UI objects for all windows
