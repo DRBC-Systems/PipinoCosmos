@@ -234,9 +234,10 @@ GeneratedProblem ProblemGenerator::generateCompleteProblemSync(const QString& pr
         return GeneratedProblem("Error: AI Service not initialized.");
     }
     
-    // Determine if we should generate multiple choice based on difficulty or force flag
+    // Determine if we should generate multiple choice based on difficulty, force flag, and current problem type
+    bool isCurrentProblemMC = model && model->isCurrentProblemMultipleChoice();
     bool shouldGenerateMultipleChoice = forceMultipleChoice || 
-                                       (difficulty.toLower() == "easy" || difficulty.toLower() == "medium");
+                                       ((difficulty.toLower() == "easy" || difficulty.toLower() == "medium") && isCurrentProblemMC);
     
     QString prompt;
     if (shouldGenerateMultipleChoice) {
@@ -405,6 +406,12 @@ GeneratedProblem ProblemGenerator::parseMultipleChoiceResponse(const QString& re
             choice.isCorrect = false;
         }
         choices[0].isCorrect = true;
+    }
+    
+    // Check if the current problem is actually a multiple choice problem
+    if (model && !model->isCurrentProblemMultipleChoice()) {
+        qDebug() << "Current problem is not multiple choice, returning as regular problem.";
+        return GeneratedProblem(problemStatement);
     }
     
     return GeneratedProblem(problemStatement, choices);
