@@ -73,7 +73,7 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="theoryLabel">
+   <widget class="QScrollArea" name="theoryScrollArea">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -82,27 +82,75 @@
       <height>461</height>
      </rect>
     </property>
-    <property name="font">
-     <font>
-      <family>Calibri</family>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
     <property name="styleSheet">
-     <string notr="true">QLabel {
-    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+     <string notr="true">QScrollArea {
+    border: 2px solid rgb(255, 140, 0);
     border-radius: 5px;
-    padding: 6px;
-    color: white;                 /* orange text */
-    background-color: rgb(80, 40, 120);      /* darker purple background */
+    background-color: rgb(80, 40, 120);
+}
+QScrollBar:vertical {
+    background-color: rgb(80, 40, 120);
+    width: 12px;
+    border: 1px solid rgb(255, 140, 0);
+}
+QScrollBar::handle:vertical {
+    background-color: rgb(255, 140, 0);
+    border-radius: 5px;
+    min-height: 20px;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
 }</string>
     </property>
-    <property name="text">
-     <string>Theory ...........</string>
+    <property name="widgetResizable">
+     <bool>true</bool>
     </property>
-    <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-    </property>
+    <widget class="QWidget" name="theoryScrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>456</width>
+       <height>457</height>
+      </rect>
+     </property>
+     <widget class="QLabel" name="theoryLabel">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>456</width>
+        <height>457</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
+    border: none;
+    padding: 6px;
+    color: white;
+    background-color: transparent;
+}</string>
+      </property>
+      <property name="text">
+       <string>Theory ...........</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QPushButton" name="backButton">
     <property name="geometry">

@@ -6,6 +6,7 @@
 
 class Model;
 class View;
+class ProblemGenerator;
 
 class Controller : public QObject
 {
@@ -37,6 +38,7 @@ public slots:
 private:
     Model* model;
     View* view;
+    ProblemGenerator* problemGenerator;
     
     // Current context for navigation
     int currentUnitIndex;

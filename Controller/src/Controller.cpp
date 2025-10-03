@@ -1,21 +1,31 @@
 #include "Controller.h"
 #include "Model.h"
 #include "View.h"
+#include "ProblemGenerator.h"
 #include <QDateTime>
 #include <QMessageBox>
+#include <QApplication>
 
 Controller::Controller(QObject *parent)
     : QObject(parent)
     , model(nullptr)
     , view(nullptr)
+    , problemGenerator(nullptr)
     , currentUnitIndex(-1)
     , currentProblemIndex(-1)
 {
+    // Initialize ProblemGenerator
+    problemGenerator = new ProblemGenerator(this);
 }
 
 void Controller::setModel(Model* mdl)
 {
     model = mdl;
+    
+    // Set the model for the problem generator
+    if (problemGenerator && model) {
+        problemGenerator->setModel(model);
+    }
 }
 
 void Controller::setView(View* vw)
@@ -33,21 +43,6 @@ void Controller::initializeApplication()
         view->setController(this);
         qDebug() << "Application initialized with" << model->getUnitCount() << "units";
         logUserAction("Application Started", QString("Units available: %1").arg(model->getUnitCount()));
-        
-        // 🧪 TEST THE NEW FUNCTIONS WITH NO SELECTION - Show results in a message box
-        std::string noProblem = model->getCurrentProblem();
-        std::string noDifficulty = model->getCurrentDifficulty();
-        
-        QString noSelectionTest = QString("🧪 TESTING WITH NO SELECTION:\n\n"
-                                         "getCurrentProblem() returned:\n'%1'\n\n"
-                                         "getCurrentDifficulty() returned:\n'%2'\n"
-                                         "(This comes from USER SETTINGS, default: Medium)\n\n"
-                                         "Now select a problem to test! 🎯")
-                                 .arg(QString::fromStdString(noProblem))
-                                 .arg(QString::fromStdString(noDifficulty));
-        
-        // Show the test results in a message box
-        QMessageBox::information(nullptr, "Model Function Test - No Selection", noSelectionTest);
     }
 }
 
@@ -61,39 +56,41 @@ void Controller::handleProblemSelection(int unitIndex, int problemIndex)
     // Update the Model's current selection so getCurrentProblem() and getCurrentDifficulty() work
     model->setCurrentSelection(unitIndex, problemIndex);
     
-    // 🧪 TEST THE NEW FUNCTIONS - Show results in a message box
-    std::string currentProblem = model->getCurrentProblem();
-    std::string currentDifficulty = model->getCurrentDifficulty();
-    bool isMultipleChoice = model->isCurrentProblemMultipleChoice();
-    
-    // 🧪 TEST CHANGING USER DIFFICULTY SETTING
-    model->setUserDifficulty("Hard");  // Change user setting to Hard
-    std::string newDifficulty = model->getCurrentDifficulty();
-    
-    QString testMessage = QString("🧪 TESTING NEW MODEL FUNCTIONS:\n\n"
-                                 "getCurrentProblem() returned:\n'%1'\n\n"
-                                 "getCurrentDifficulty() returned:\n'%2'\n"
-                                 "(Changed user setting to 'Hard' - see it works!)\n\n"
-                                 "isCurrentProblemMultipleChoice() returned:\n%3\n\n"
-                                 "All functions are working! ✅")
-                         .arg(QString::fromStdString(currentProblem))
-                         .arg(QString::fromStdString(newDifficulty))
-                         .arg(isMultipleChoice ? "true (Multiple Choice)" : "false (Scan Problem)");
-    
-    // Show the test results in a message box
-    QMessageBox::information(nullptr, "Model Function Test Results", testMessage);
-    
     const Unit* unit = model->getUnit(unitIndex);
     if (unit && problemIndex >= 0 && problemIndex < unit->problems.size()) {
         const Problem& problem = unit->problems[problemIndex];
         
         QString logDetails = QString("Unit: %1, Problem: %2, Difficulty: %3")
-                           .arg(unit->name, problem.name, problem.difficulty);
+                           .arg(unit->name, problem.name, model->getUserDifficulty());
         
         if (problemIndex < 3) {
-            // First 3 problems use MultipleChoiceWindow
+            // First 3 problems use MultipleChoiceWindow - Generate AI problem without popups
             logUserAction("Multiple Choice Problem Selected", logDetails);
             qDebug() << "Opening Multiple Choice for:" << problem.name;
+            
+            if (problemGenerator) {
+                qDebug() << "🤖 Generating AI problem for:" << problem.name;
+                qDebug() << "   Topic:" << problem.name;
+                qDebug() << "   Difficulty:" << model->getUserDifficulty();
+                
+                // Generate the problem synchronously (no UI popups)
+                GeneratedProblem generatedProblem = problemGenerator->generateCompleteProblemSync(
+                    problem.name, 
+                    model->getUserDifficulty(),
+                    true
+                );
+                
+                // Update the model only if valid MC content exists
+                if (generatedProblem.isMultipleChoice && !generatedProblem.choices.isEmpty()) {
+                    model->updateProblemContent(unitIndex, problemIndex, 
+                                               generatedProblem.problemStatement,
+                                               generatedProblem.choices);
+                    // Ask the view to refresh the visible content if it's open
+                    if (view) {
+                        view->refreshMultipleChoice(unitIndex, problemIndex);
+                    }
+                }
+            }
         } else {
             // Problems 4+ use ScanWindow
             logUserAction("Scan Problem Selected", logDetails);

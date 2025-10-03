@@ -58,6 +58,11 @@ public:
     void removeProblemFromUnit(int unitIndex, int problemIndex);
     QStringList getProblemsForUnit(int unitIndex) const;
     
+    // Update problem content (for AI-generated problems)
+    void updateProblemContent(int unitIndex, int problemIndex, 
+                             const QString& problemStatement, 
+                             const QVector<MultipleChoiceOption>& choices);
+    
     // Initialize with sample data
     void initializeSampleData();
     
