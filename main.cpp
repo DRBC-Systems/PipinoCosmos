@@ -3,7 +3,7 @@
 #include "Model.h"
 #include "Controller.h"
 #include "Example.h"   // <-- AI test
-#include "ProblemGenerator.h"
+// #include "ProblemGenerator.h"  // Commented out - not used in current build
 #include "AIService.h" // <-- Add AIService for OCR
 #include "SolutionGrader.h"
 #include <iostream>
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
     // OCR Test
     // -----------------------------
     OcrScanner scanner;
-    QString imagePath = "/home/user/Desktop/PipinoCosmos/Assets/test.png";  // <-- Your test image
+    QString imagePath = "Assets/test.png";  // <-- Your test image
     QString ocrResult = scanner.scanImage(imagePath);
 
     std::cout << "\n=== OCR Test ===" << std::endl;

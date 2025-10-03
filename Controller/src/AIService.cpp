@@ -1,9 +1,14 @@
 #include "AIService.h"
 #include <QUrlQuery>
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QDebug>
 #include <QEventLoop>
 #include <QTimer>
+#include <QNetworkRequest>
+#include <QHttpMultiPart>
+#include <QFileInfo>
+#include <QFile>
 
 AIService::AIService(QObject *parent) : QObject(parent)
 {
