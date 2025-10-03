@@ -3,6 +3,7 @@
 #include "Controller.h"
 #include <QApplication>
 #include <QDebug>
+#include <QTimer>
 
 View::View(QWidget *parent)
     : QMainWindow(parent)
@@ -74,6 +75,9 @@ void View::setupMainWindow()
     
     // Set the layout to the units container widget
     mainUI->unitsContainer->setLayout(unitsLayout);
+    
+    // Connect main settings button
+    connect(mainUI->mainSettingsButton, &QPushButton::clicked, this, &View::onMainSettingsButtonClicked);
 }
 
 void View::setupMultipleChoiceWindow()
@@ -90,6 +94,9 @@ void View::setupSettingsWindow()
     settingsWindow->setModal(true);
     settingsUI = new Ui::SettingsWindow();
     settingsUI->setupUi(settingsWindow);
+    
+    // Set default difficulty to Medium (index 1)
+    settingsUI->difficultyComboBox->setCurrentIndex(1);
 }
 
 void View::setupScanWindow()
@@ -124,6 +131,8 @@ void View::connectSignals()
     // Settings Window signals
     if (settingsUI) {
         connect(settingsUI->backButton, &QPushButton::clicked, this, &View::onBackButtonClicked);
+        connect(settingsUI->difficultyComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this, &View::onDifficultyChanged);
     }
     
     // Scan Window signals
@@ -229,7 +238,11 @@ void View::populateMultipleChoiceWindow(int unitIndex, int problemIndex)
     
     // Set problem statement
     QString problemStatement = model->getProblemStatement(unitIndex, problemIndex);
-    multipleChoiceUI->problemLabel->setText(problemStatement);
+    if (problemStatement.isEmpty() || problemStatement == "Problem not found") {
+        multipleChoiceUI->problemLabel->setText("Generating problem... Please wait.");
+    } else {
+        multipleChoiceUI->problemLabel->setText(problemStatement);
+    }
     
     // Set multiple choice options
     QVector<MultipleChoiceOption> choices = model->getMultipleChoiceOptions(unitIndex, problemIndex);
@@ -240,10 +253,15 @@ void View::populateMultipleChoiceWindow(int unitIndex, int problemIndex)
         multipleChoiceUI->choiceButton2->setText(choices[1].text);
         multipleChoiceUI->choiceButton3->setText(choices[2].text);
         multipleChoiceUI->choiceButton4->setText(choices[3].text);
+        setChoiceButtonsEnabled(true);
+    } else {
+        // No choices yet, disable until AI fills them
+        multipleChoiceUI->choiceButton1->setText("A)");
+        multipleChoiceUI->choiceButton2->setText("B)");
+        multipleChoiceUI->choiceButton3->setText("C)");
+        multipleChoiceUI->choiceButton4->setText("D)");
+        setChoiceButtonsEnabled(false);
     }
-    
-    // Reset button states
-    setChoiceButtonsEnabled(true);
     
     // Reset button styles to original (remove any green highlighting)
     resetChoiceButtonStyles();
@@ -256,7 +274,7 @@ void View::populateTheoryWindow(int unitIndex, int problemIndex)
     const Unit* unit = model->getUnit(unitIndex);
     if (unit && problemIndex >= 0 && problemIndex < unit->problems.size()) {
         const Problem& problem = unit->problems[problemIndex];
-        theoryUI->theoryTitleLabel->setText(QString("📚 Theory: %1").arg(problem.name));
+        theoryUI->theoryTitleLabel->setText(QString("📚 %1").arg(problem.name));
     }
     
     QString theoryContent = model->getTheoryContent(unitIndex, problemIndex);
@@ -281,14 +299,18 @@ void View::onProblemSelectionChanged()
     int problemIndex = senderCombo->currentIndex() - 1; // -1 because first item is "-- Choose a problem --"
     
     if (problemIndex >= 0) {
-        // For first 3 problems, show MultipleChoiceWindow
         if (problemIndex < 3) {
-            showMultipleChoiceWindow(unitIndex, problemIndex);
+            // Trigger AI generation first, then show window
+            emit problemSelected(unitIndex, problemIndex);
+            
+            // Use QTimer to allow AI to start before blocking with exec()
+            QTimer::singleShot(100, this, [this, unitIndex, problemIndex]() {
+                showMultipleChoiceWindow(unitIndex, problemIndex);
+            });
         } else {
-            // For problems 4+, show ScanWindow
+            // Scan window is independent; do not emit selection/problem event
             showScanWindow(unitIndex, problemIndex);
         }
-        emit problemSelected(unitIndex, problemIndex);
     }
 }
 
@@ -364,6 +386,22 @@ void View::onChoiceButtonClicked()
     }
 }
 
+void View::onDifficultyChanged(int index)
+{
+    if (!model || !settingsUI) return;
+    
+    QString difficulty = settingsUI->difficultyComboBox->currentText();
+    model->setUserDifficulty(difficulty);
+    
+    qDebug() << "Difficulty changed to:" << difficulty;
+}
+
+void View::onMainSettingsButtonClicked()
+{
+    showSettingsWindow(WindowType::MainWindow);
+    emit settingsButtonClicked();
+}
+
 // Helper methods
 void View::setChoiceButtonsEnabled(bool enabled)
 {
@@ -416,6 +454,10 @@ void View::resetChoiceButtonStyles()
 }
 
 // Main window methods (keeping existing functionality)
+void View::refreshMultipleChoice(int unitIndex, int problemIndex)
+{
+    populateMultipleChoiceWindow(unitIndex, problemIndex);
+}
 void View::refreshUnits()
 {
     if (!model) return;
