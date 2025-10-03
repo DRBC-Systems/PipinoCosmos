@@ -54,7 +54,7 @@ void ProblemGenerator::generateProblem(const QString& problemType, const QString
     QString prompt = createPrompt(problemType, difficulty);
     
     qDebug() << "Generating problem for:" << problemType << "at" << difficulty << "difficulty";
-    qDebug() << "Prompt:" << prompt;
+    // qDebug() << "Prompt:" << prompt;
     
     // Send prompt to AI service
     aiService->prompt(prompt);
@@ -213,7 +213,7 @@ QString ProblemGenerator::generateProblemSync(const QString& problemType, const 
     QString prompt = createPrompt(problemType, difficulty);
     
     qDebug() << "Generating problem synchronously for:" << problemType << "at" << difficulty << "difficulty";
-    qDebug() << "Prompt:" << prompt;
+    // qDebug() << "Prompt:" << prompt;
     
     // Send prompt to AI service and wait for response
     QString response = aiService->promptSync(prompt);
@@ -248,7 +248,7 @@ GeneratedProblem ProblemGenerator::generateCompleteProblemSync(const QString& pr
     
     qDebug() << "Generating complete problem for:" << problemType << "at" << difficulty << "difficulty";
     qDebug() << "Multiple choice:" << shouldGenerateMultipleChoice;
-    qDebug() << "Prompt:" << prompt;
+    // qDebug() << "Prompt:" << prompt;
     
     // Send prompt to AI service and wait for response
     QString response = aiService->promptSync(prompt);
