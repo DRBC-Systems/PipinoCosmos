@@ -30,7 +30,7 @@ QString SolutionGrader::gradeSolution(const QString& userSolution, const QString
     
     qDebug() << "Grading solution for problem:" << problemStatement;
     qDebug() << "User solution:" << userSolution;
-    qDebug() << "Grading prompt:" << prompt;
+    // qDebug() << "Grading prompt:" << prompt;
     
     // Send prompt to AI service and wait for response
     QString response = aiService->promptSync(prompt);
@@ -55,7 +55,7 @@ void SolutionGrader::gradeSolutionAsync(const QString& userSolution, const QStri
     
     qDebug() << "Grading solution asynchronously for problem:" << problemStatement;
     qDebug() << "User solution:" << userSolution;
-    qDebug() << "Grading prompt:" << prompt;
+    // qDebug() << "Grading prompt:" << prompt;
     
     // Send prompt to AI service
     aiService->prompt(prompt);
@@ -72,7 +72,7 @@ QString SolutionGrader::getDetailedFeedback(const QString& userSolution, const Q
     
     qDebug() << "Getting detailed feedback for problem:" << problemStatement;
     qDebug() << "User solution:" << userSolution;
-    qDebug() << "Detailed feedback prompt:" << prompt;
+    // qDebug() << "Detailed feedback prompt:" << prompt;
     
     // Send prompt to AI service and wait for response
     QString response = aiService->promptSync(prompt);
@@ -97,7 +97,7 @@ void SolutionGrader::getDetailedFeedbackAsync(const QString& userSolution, const
     
     qDebug() << "Getting detailed feedback asynchronously for problem:" << problemStatement;
     qDebug() << "User solution:" << userSolution;
-    qDebug() << "Detailed feedback prompt:" << prompt;
+    // qDebug() << "Detailed feedback prompt:" << prompt;
     
     // Send prompt to AI service
     aiService->prompt(prompt);

@@ -3,7 +3,7 @@
 #include "Model.h"
 #include "Controller.h"
 #include "Example.h"   // <-- AI test
-#include "ProblemGenerator.h"
+// #include "ProblemGenerator.h"  // Commented out - not used in current build
 #include "AIService.h" // <-- Add AIService for OCR
 #include "SolutionGrader.h"
 #include <iostream>
@@ -147,7 +147,8 @@ int main(int argc, char *argv[])
     // OCR Test
     // -----------------------------
     OcrScanner scanner;
-    QString ocrText = scanner.getTextFromImage("/home/user/Desktop/PipinoCosmos/Assets/test.png");
+    QString imagePath = "Assets/test.png";  // <-- Your test image
+    QString ocrResult = scanner.scanImage(imagePath);
 
     // Feed `ocrText` directly to the AI service or store it in the model
     AIService ai;
