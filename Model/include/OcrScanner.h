@@ -19,4 +19,6 @@ private:
     tesseract::TessBaseAPI *tess;  // Make sure this exists
 };
 
+
+
 #endif // OCRSCANNER_H

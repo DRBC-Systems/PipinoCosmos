@@ -33,3 +33,6 @@ QString OcrScanner::scanImage(const QString &filePath) {
 QString OcrScanner::getTextFromImage(const QString &filePath) {
     return scanImage(filePath);
 }
+
+
+
