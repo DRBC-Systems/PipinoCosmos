@@ -123,3 +123,87 @@ void AIService::handleReply(QNetworkReply *reply)
     }
     reply->deleteLater();
 }
+void AIService::ocr(const QString &imagePath)
+{
+    QUrl url(baseUrl + "/ocr");
+    QNetworkRequest request(url);
+
+    // Prepare multipart form
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+    QHttpPart imagePart;
+    imagePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                        QVariant("form-data; name=\"file\"; filename=\"" + QFileInfo(imagePath).fileName() + "\""));
+
+    QFile *file = new QFile(imagePath);
+    if (!file->open(QIODevice::ReadOnly)) {
+        emit errorOccurred("Failed to open image: " + imagePath);
+        delete multiPart;
+        return;
+    }
+
+    imagePart.setBodyDevice(file);
+    file->setParent(multiPart); // file will be deleted with multiPart
+    multiPart->append(imagePart);
+
+    QNetworkReply *reply = manager->post(request, multiPart);
+    multiPart->setParent(reply); // ensure cleanup
+    connect(reply, &QNetworkReply::finished, [=]() { handleReply(reply); });
+}
+
+QString AIService::ocrSync(const QString &imagePath, int timeoutMs)
+{
+    QUrl url(baseUrl + "/ocr");
+    QNetworkRequest request(url);
+
+    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+
+    QHttpPart imagePart;
+    imagePart.setHeader(QNetworkRequest::ContentDispositionHeader,
+                        QVariant("form-data; name=\"file\"; filename=\"" + QFileInfo(imagePath).fileName() + "\""));
+
+    QFile *file = new QFile(imagePath);
+    if (!file->open(QIODevice::ReadOnly)) {
+        return "Error: Could not open file " + imagePath;
+    }
+
+    imagePart.setBodyDevice(file);
+    file->setParent(multiPart);
+    multiPart->append(imagePart);
+
+    QNetworkReply *reply = manager->post(request, multiPart);
+    multiPart->setParent(reply);
+
+    // Same blocking logic as your promptSync
+    QEventLoop loop;
+    QTimer timer;
+    timer.setSingleShot(true);
+
+    QString result;
+    bool finished = false;
+
+    connect(reply, &QNetworkReply::finished, [&]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            result = QString(reply->readAll());
+        } else {
+            result = QString("Error: %1").arg(reply->errorString());
+        }
+        finished = true;
+        loop.quit();
+    });
+
+    connect(&timer, &QTimer::timeout, [&]() {
+        result = "Timeout: No response from OCR service within " + QString::number(timeoutMs) + "ms";
+        reply->abort();
+        finished = true;
+        loop.quit();
+    });
+
+    timer.start(timeoutMs);
+    if (!finished) {
+        loop.exec();
+    }
+
+    reply->deleteLater();
+    return result;
+}
