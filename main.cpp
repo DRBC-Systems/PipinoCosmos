@@ -147,20 +147,16 @@ int main(int argc, char *argv[])
     // OCR Test
     // -----------------------------
     OcrScanner scanner;
-    QString imagePath = "/home/user/Desktop/PipinoCosmos/Assets/test.png";  // <-- Your test image
-    QString ocrResult = scanner.scanImage(imagePath);
+    QString ocrText = scanner.getTextFromImage("/home/user/Desktop/PipinoCosmos/Assets/test.png");
+
+    // Feed `ocrText` directly to the AI service or store it in the model
+    AIService ai;
+    QString aiResponse = ai.promptSync(ocrText);
 
     std::cout << "\n=== OCR Test ===" << std::endl;
-    if (ocrResult.isEmpty()) {
-        std::cout << "OCR Failed or returned empty string." << std::endl;
-    } else {
-        std::cout << "OCR Output: " << ocrResult.toStdString() << std::endl;
-
-        // Send OCR text to AI
-        AIService ai;
-        QString response = ai.promptSync(ocrResult);
-        std::cout << "AI Response: " << response.toStdString() << std::endl;
-    }
+    std::cout << "Extracted Text: " << ocrText.toStdString() << std::endl;
+    std::cout << "AI Response: " << aiResponse.toStdString() << std::endl;
+    std::cout << "================================\n" << std::endl;
     std::cout << "================================\n" << std::endl;
 
     return app.exec();

@@ -2,30 +2,34 @@
 #include <QDebug>
 
 OcrScanner::OcrScanner() {
-    api = new tesseract::TessBaseAPI();
-    if (api->Init(nullptr, "eng")) { // "eng" language
-        qWarning() << "Could not initialize tesseract.";
+    tess = new tesseract::TessBaseAPI();
+    if (tess->Init(nullptr, "eng")) {
+        qDebug() << "Tesseract initialization failed";
     }
 }
 
 OcrScanner::~OcrScanner() {
-    api->End();
-    delete api;
+    if (tess) {
+        tess->End();
+        delete tess;
+    }
 }
 
 QString OcrScanner::scanImage(const QString &filePath) {
     Pix *image = pixRead(filePath.toStdString().c_str());
     if (!image) {
-        qWarning() << "Could not open image:" << filePath;
-        return "";
+        return "Error: Could not read image";
     }
 
-    api->SetImage(image);
-    char *outText = api->GetUTF8Text();
-    QString result = QString::fromUtf8(outText);
-
+    tess->SetImage(image);
+    char *outText = tess->GetUTF8Text();
+    QString result(outText);
     delete[] outText;
     pixDestroy(&image);
 
-    return result;
+    return result.trimmed();
+}
+
+QString OcrScanner::getTextFromImage(const QString &filePath) {
+    return scanImage(filePath);
 }
