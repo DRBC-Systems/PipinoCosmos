@@ -6,10 +6,21 @@
 #include <QVector>
 #include <QObject>
 
+struct MultipleChoiceOption {
+    QString text;
+    bool isCorrect;
+    
+    MultipleChoiceOption(const QString& t = "", bool correct = false)
+        : text(t), isCorrect(correct) {}
+};
+
 struct Problem {
     QString name;
     QString description;
     QString difficulty;
+    QString problemStatement;
+    QString theoryContent;
+    QVector<MultipleChoiceOption> choices;
     
     Problem(const QString& n = "", const QString& desc = "", const QString& diff = "Easy") 
         : name(n), description(desc), difficulty(diff) {}
@@ -49,6 +60,27 @@ public:
     
     // Initialize with sample data
     void initializeSampleData();
+    
+    // Problem content methods
+    QString getProblemStatement(int unitIndex, int problemIndex) const;
+    QString getTheoryContent(int unitIndex, int problemIndex) const;
+    QVector<MultipleChoiceOption> getMultipleChoiceOptions(int unitIndex, int problemIndex) const;
+    int getCorrectChoiceIndex(int unitIndex, int problemIndex) const;
+    
+    // Utility methods for string conversion
+    QString unitProblemToString(int unitIndex, int problemIndex) const;
+    std::string qStringToStdString(const QString& qstr) const;
+    QString stdStringToQString(const std::string& str) const;
+    
+    // Current selection methods - returns currently selected problem and difficulty
+    std::string getCurrentProblem() const;    // Returns the name of the currently selected problem
+    std::string getCurrentDifficulty() const; // Returns the USER'S difficulty setting (from settings)
+    bool isCurrentProblemMultipleChoice() const; // Returns true if current problem is multiple choice, false otherwise
+    void setCurrentSelection(int unitIndex, int problemIndex); // Sets the current selection
+    
+    // User settings methods
+    void setUserDifficulty(const QString& difficulty); // Sets the user's difficulty preference
+    QString getUserDifficulty() const; // Gets the user's difficulty preference as QString
 
 signals:
     void unitsChanged();
@@ -56,6 +88,13 @@ signals:
 
 private:
     QVector<Unit> units;
+    
+    // Current selection tracking
+    int currentUnitIndex;    // Currently selected unit index (-1 if none selected)
+    int currentProblemIndex; // Currently selected problem index (-1 if none selected)
+    
+    // User settings
+    QString userDifficultySetting; // User's chosen difficulty setting ("Easy", "Medium", "Hard")
 };
 
 #endif // MODEL_H

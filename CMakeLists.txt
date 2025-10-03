@@ -106,15 +106,23 @@ message(STATUS "Using Qt6 from: ${Qt6_DIR}")
 
 
 # -------------------------------
-# Copy assets
+# Copy assets and external resources
 # -------------------------------
 file(COPY Assets DESTINATION ${CMAKE_BINARY_DIR})
+
+# Copy bootstrap API data files for runtime access
+file(COPY Externals/2025-bootstrap-main/api/data 
+     DESTINATION ${CMAKE_BINARY_DIR}/api)
 
 # -------------------------------
 # UI files (just list them, AUTOUIC handles them)
 # -------------------------------
 set(UI_FILES
     ${PROJECT_SOURCE_DIR}/Externals/Qt/MainWindow.ui
+    ${PROJECT_SOURCE_DIR}/Externals/Qt/MultipleChoiceWindow.ui
+    ${PROJECT_SOURCE_DIR}/Externals/Qt/SettingsWindow.ui
+    ${PROJECT_SOURCE_DIR}/Externals/Qt/ScanWindow.ui
+    ${PROJECT_SOURCE_DIR}/Externals/Qt/TheoryWindow.ui
 )
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS
@@ -137,6 +145,10 @@ file(GLOB_RECURSE VIEW_SOURCES CONFIGURE_DEPENDS
     "${PROJECT_SOURCE_DIR}/View/src/*.cpp"
     "${PROJECT_SOURCE_DIR}/View/include/*.h"
 )
+file(GLOB_RECURSE AI_SOURCES CONFIGURE_DEPENDS 
+    "${PROJECT_SOURCE_DIR}/AI/src/*.cpp"
+    "${PROJECT_SOURCE_DIR}/AI/include/*.h"
+)
 
 # Main source files
 set(MAIN_SOURCES
@@ -148,6 +160,7 @@ set(SOURCES
     ${CONTROLLER_SOURCES}
     ${MODEL_SOURCES}
     ${VIEW_SOURCES}
+    ${AI_SOURCES}
     ${MAIN_SOURCES}
     ${UI_FILES}
 )
@@ -156,6 +169,7 @@ set(SOURCES
 message(STATUS "Controller sources: ${CONTROLLER_SOURCES}")
 message(STATUS "Model sources: ${MODEL_SOURCES}")
 message(STATUS "View sources: ${VIEW_SOURCES}")
+message(STATUS "AI sources: ${AI_SOURCES}")
 message(STATUS "UI files: ${UI_FILES}")
 
 # -------------------------------
@@ -170,6 +184,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/Controller/include
     ${PROJECT_SOURCE_DIR}/Model/include
     ${PROJECT_SOURCE_DIR}/View/include
+    ${PROJECT_SOURCE_DIR}/AI/include
     ${CMAKE_CURRENT_BINARY_DIR}  # For generated UI headers (ui_*.h)
 )
 
@@ -205,6 +220,11 @@ endif()
 # -------------------------------
 # Installation (optional)
 # -------------------------------
+# Set a reasonable default install prefix for Windows
+if(WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Install path prefix" FORCE)
+endif()
+
 install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
     RUNTIME DESTINATION bin
@@ -215,6 +235,48 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/Assets
     DESTINATION bin
     OPTIONAL
 )
+
+# Install bootstrap API data
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/Externals/2025-bootstrap-main/api/data
+    DESTINATION bin/api
+    OPTIONAL
+)
+
+# -------------------------------
+# External Components (Bootstrap API)
+# -------------------------------
+# Check if Node.js is available for the bootstrap API
+find_program(NODE_EXECUTABLE node)
+find_program(NPM_EXECUTABLE npm)
+
+if(NODE_EXECUTABLE AND NPM_EXECUTABLE)
+    message(STATUS "Node.js found: ${NODE_EXECUTABLE}")
+    message(STATUS "npm found: ${NPM_EXECUTABLE}")
+    
+    # Add custom target to build the bootstrap API
+    add_custom_target(bootstrap-api
+        COMMENT "Building Bootstrap API (NestJS)"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Externals/2025-bootstrap-main/api
+        COMMAND ${NPM_EXECUTABLE} install
+        COMMAND ${NPM_EXECUTABLE} run build
+        VERBATIM
+    )
+    
+    # Add custom target to run the bootstrap API in development mode
+    add_custom_target(run-bootstrap-api
+        COMMENT "Running Bootstrap API in development mode"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Externals/2025-bootstrap-main/api
+        COMMAND ${NPM_EXECUTABLE} run start:dev
+        VERBATIM
+    )
+    
+    message(STATUS "Bootstrap API targets available:")
+    message(STATUS "  - 'make bootstrap-api' or 'cmake --build . --target bootstrap-api' to build")
+    message(STATUS "  - 'make run-bootstrap-api' or 'cmake --build . --target run-bootstrap-api' to run")
+else()
+    message(STATUS "Node.js/npm not found. Bootstrap API targets will not be available.")
+    message(STATUS "To use the Bootstrap API, install Node.js from https://nodejs.org/")
+endif()
 
 # -------------------------------
 # Summary

@@ -18,6 +18,9 @@ public:
     void chat(const QJsonArray &messages);
     void embeddings(const QString &text);
     void rag(const QString &query);
+    
+    // Synchronous method that blocks and returns response
+    QString promptSync(const QString &message, int timeoutMs = 10000);
 
 signals:
     void finished(const QString &response);

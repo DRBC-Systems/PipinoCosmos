@@ -2,6 +2,8 @@
 #include <QUrlQuery>
 #include <QJsonArray>
 #include <QDebug>
+#include <QEventLoop>
+#include <QTimer>
 
 AIService::AIService(QObject *parent) : QObject(parent)
 {
@@ -52,6 +54,58 @@ void AIService::rag(const QString &queryText)
 
     QNetworkReply *reply = manager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, [=]() { handleReply(reply); });
+}
+
+QString AIService::promptSync(const QString &message, int timeoutMs)
+{
+    QUrl url(baseUrl + "/prompt");
+    QUrlQuery query;
+    query.addQueryItem("message", message);
+    url.setQuery(query);
+
+    QNetworkReply *reply = manager->get(QNetworkRequest(url));
+    
+    // Create event loop to wait for response
+    QEventLoop loop;
+    QTimer timer;
+    timer.setSingleShot(true);
+    
+    QString result;
+    bool finished = false;
+    
+    // Connect to handle successful response
+    connect(reply, &QNetworkReply::finished, [&]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            QByteArray response = reply->readAll();
+            result = QString(response);
+            qDebug() << "AIService Sync Response:" << result;
+        } else {
+            result = QString("Error: %1").arg(reply->errorString());
+            qDebug() << "AIService Sync Error:" << reply->errorString();
+        }
+        finished = true;
+        loop.quit();
+    });
+    
+    // Connect timeout handler
+    connect(&timer, &QTimer::timeout, [&]() {
+        result = "Timeout: No response from AI service within " + QString::number(timeoutMs) + "ms";
+        qDebug() << "AIService Sync Timeout";
+        finished = true;
+        reply->abort(); // Cancel the request
+        loop.quit();
+    });
+    
+    // Start timeout timer
+    timer.start(timeoutMs);
+    
+    // Block until response or timeout
+    if (!finished) {
+        loop.exec();
+    }
+    
+    reply->deleteLater();
+    return result;
 }
 
 void AIService::handleReply(QNetworkReply *reply)

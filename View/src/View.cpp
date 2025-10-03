@@ -2,21 +2,38 @@
 #include "Model.h"
 #include "Controller.h"
 #include <QApplication>
+#include <QDebug>
 
 View::View(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , mainUI(nullptr)
+    , multipleChoiceUI(nullptr)
+    , settingsUI(nullptr)
+    , scanUI(nullptr)
+    , theoryUI(nullptr)
+    , multipleChoiceWindow(nullptr)
+    , settingsWindow(nullptr)
+    , scanWindow(nullptr)
+    , theoryWindow(nullptr)
     , controller(nullptr)
     , model(nullptr)
+    , currentWindow(WindowType::MainWindow)
+    , previousWindow(WindowType::MainWindow)
+    , currentUnitIndex(-1)
+    , currentProblemIndex(-1)
+    , correctChoiceIndex(-1)
     , unitsLayout(nullptr)
 {
-    ui->setupUi(this);
     setupUI();
 }
 
 View::~View()
 {
-    delete ui;
+    delete mainUI;
+    delete multipleChoiceUI;
+    delete settingsUI;
+    delete scanUI;
+    delete theoryUI;
 }
 
 void View::setController(Controller* ctrl)
@@ -36,15 +53,369 @@ void View::setModel(Model* mdl)
 
 void View::setupUI()
 {
+    setupMainWindow();
+    setupMultipleChoiceWindow();
+    setupSettingsWindow();
+    setupScanWindow();
+    setupTheoryWindow();
+    
+    connectSignals();
+}
+
+void View::setupMainWindow()
+{
+    mainUI = new Ui::MainWindow();
+    mainUI->setupUi(this); // Use 'this' since View inherits from QMainWindow
+    
     // Create main layout for the units container
     unitsLayout = new QVBoxLayout();
     unitsLayout->setSpacing(15);
     unitsLayout->setContentsMargins(10, 10, 10, 10);
     
     // Set the layout to the units container widget
-    ui->unitsContainer->setLayout(unitsLayout);
+    mainUI->unitsContainer->setLayout(unitsLayout);
 }
 
+void View::setupMultipleChoiceWindow()
+{
+    multipleChoiceWindow = new QDialog(this);
+    multipleChoiceWindow->setModal(true);
+    multipleChoiceUI = new Ui::MultipleChoiceWindow();
+    multipleChoiceUI->setupUi(multipleChoiceWindow);
+}
+
+void View::setupSettingsWindow()
+{
+    settingsWindow = new QDialog(this);
+    settingsWindow->setModal(true);
+    settingsUI = new Ui::SettingsWindow();
+    settingsUI->setupUi(settingsWindow);
+}
+
+void View::setupScanWindow()
+{
+    scanWindow = new QDialog(this);
+    scanWindow->setModal(true);
+    scanUI = new Ui::ScanWindow();
+    scanUI->setupUi(scanWindow);
+}
+
+void View::setupTheoryWindow()
+{
+    theoryWindow = new QDialog(this);
+    theoryWindow->setModal(true);
+    theoryUI = new Ui::TheoryWindow();
+    theoryUI->setupUi(theoryWindow);
+}
+
+void View::connectSignals()
+{
+    // Multiple Choice Window signals
+    if (multipleChoiceUI) {
+        connect(multipleChoiceUI->backButton, &QPushButton::clicked, this, &View::onBackButtonClicked);
+        connect(multipleChoiceUI->settingsButton, &QPushButton::clicked, this, &View::onSettingsButtonClicked);
+        connect(multipleChoiceUI->theoryButton, &QPushButton::clicked, this, &View::onTheoryButtonClicked);
+        connect(multipleChoiceUI->choiceButton1, &QPushButton::clicked, this, &View::onChoiceButtonClicked);
+        connect(multipleChoiceUI->choiceButton2, &QPushButton::clicked, this, &View::onChoiceButtonClicked);
+        connect(multipleChoiceUI->choiceButton3, &QPushButton::clicked, this, &View::onChoiceButtonClicked);
+        connect(multipleChoiceUI->choiceButton4, &QPushButton::clicked, this, &View::onChoiceButtonClicked);
+    }
+    
+    // Settings Window signals
+    if (settingsUI) {
+        connect(settingsUI->backButton, &QPushButton::clicked, this, &View::onBackButtonClicked);
+    }
+    
+    // Scan Window signals
+    if (scanUI) {
+        connect(scanUI->backButton, &QPushButton::clicked, this, &View::onBackButtonClicked);
+        connect(scanUI->settingsButton, &QPushButton::clicked, this, &View::onSettingsButtonClicked);
+        connect(scanUI->scanButton, &QPushButton::clicked, this, &View::onScanButtonClicked);
+        connect(scanUI->theoryButton, &QPushButton::clicked, this, &View::onTheoryButtonClicked);
+    }
+    
+    // Theory Window signals
+    if (theoryUI) {
+        connect(theoryUI->backButton, &QPushButton::clicked, this, &View::onBackButtonClicked);
+        connect(theoryUI->settingsButton, &QPushButton::clicked, this, &View::onSettingsButtonClicked);
+    }
+}
+
+// Window navigation methods
+void View::showMainWindow()
+{
+    currentWindow = WindowType::MainWindow;
+    // Main window is always visible - just bring to front if needed
+    this->raise();
+    this->activateWindow();
+}
+
+void View::showMultipleChoiceWindow(int unitIndex, int problemIndex)
+{
+    previousWindow = currentWindow;
+    currentWindow = WindowType::MultipleChoiceWindow;
+    currentUnitIndex = unitIndex;
+    currentProblemIndex = problemIndex;
+    
+    populateMultipleChoiceWindow(unitIndex, problemIndex);
+    
+    // Center the dialog over the main window
+    multipleChoiceWindow->move(
+        this->x() + (this->width() - multipleChoiceWindow->width()) / 2,
+        this->y() + (this->height() - multipleChoiceWindow->height()) / 2
+    );
+    
+    multipleChoiceWindow->exec(); // Show as modal dialog
+}
+
+void View::showSettingsWindow(WindowType prevWindow)
+{
+    previousWindow = prevWindow;
+    currentWindow = WindowType::SettingsWindow;
+    
+    // Center the dialog over the main window
+    settingsWindow->move(
+        this->x() + (this->width() - settingsWindow->width()) / 2,
+        this->y() + (this->height() - settingsWindow->height()) / 2
+    );
+    
+    settingsWindow->exec(); // Show as modal dialog
+}
+
+void View::showScanWindow(int unitIndex, int problemIndex)
+{
+    previousWindow = currentWindow;
+    currentWindow = WindowType::ScanWindow;
+    currentUnitIndex = unitIndex;
+    currentProblemIndex = problemIndex;
+    
+    populateScanWindow(unitIndex, problemIndex);
+    
+    // Center the dialog over the main window
+    scanWindow->move(
+        this->x() + (this->width() - scanWindow->width()) / 2,
+        this->y() + (this->height() - scanWindow->height()) / 2
+    );
+    
+    scanWindow->exec(); // Show as modal dialog
+}
+
+void View::showTheoryWindow(int unitIndex, int problemIndex, WindowType prevWindow)
+{
+    previousWindow = prevWindow;
+    currentWindow = WindowType::TheoryWindow;
+    currentUnitIndex = unitIndex;
+    currentProblemIndex = problemIndex;
+    
+    populateTheoryWindow(unitIndex, problemIndex);
+    
+    // Center the dialog over the main window
+    theoryWindow->move(
+        this->x() + (this->width() - theoryWindow->width()) / 2,
+        this->y() + (this->height() - theoryWindow->height()) / 2
+    );
+    
+    theoryWindow->exec(); // Show as modal dialog
+}
+
+// Content population methods
+void View::populateMultipleChoiceWindow(int unitIndex, int problemIndex)
+{
+    if (!model || !multipleChoiceUI) return;
+    
+    // Set unit and problem label
+    QString unitProblemText = model->unitProblemToString(unitIndex, problemIndex);
+    multipleChoiceUI->unitLabel->setText(unitProblemText);
+    
+    // Set problem statement
+    QString problemStatement = model->getProblemStatement(unitIndex, problemIndex);
+    multipleChoiceUI->problemLabel->setText(problemStatement);
+    
+    // Set multiple choice options
+    QVector<MultipleChoiceOption> choices = model->getMultipleChoiceOptions(unitIndex, problemIndex);
+    correctChoiceIndex = model->getCorrectChoiceIndex(unitIndex, problemIndex);
+    
+    if (choices.size() >= 4) {
+        multipleChoiceUI->choiceButton1->setText(choices[0].text);
+        multipleChoiceUI->choiceButton2->setText(choices[1].text);
+        multipleChoiceUI->choiceButton3->setText(choices[2].text);
+        multipleChoiceUI->choiceButton4->setText(choices[3].text);
+    }
+    
+    // Reset button states
+    setChoiceButtonsEnabled(true);
+    
+    // Reset button styles to original (remove any green highlighting)
+    resetChoiceButtonStyles();
+}
+
+void View::populateTheoryWindow(int unitIndex, int problemIndex)
+{
+    if (!model || !theoryUI) return;
+    
+    const Unit* unit = model->getUnit(unitIndex);
+    if (unit && problemIndex >= 0 && problemIndex < unit->problems.size()) {
+        const Problem& problem = unit->problems[problemIndex];
+        theoryUI->theoryTitleLabel->setText(QString("📚 Theory: %1").arg(problem.name));
+    }
+    
+    QString theoryContent = model->getTheoryContent(unitIndex, problemIndex);
+    theoryUI->theoryLabel->setText(theoryContent);
+}
+
+void View::populateScanWindow(int unitIndex, int problemIndex)
+{
+    if (!model || !scanUI) return;
+    
+    QString unitProblemText = model->unitProblemToString(unitIndex, problemIndex);
+    scanUI->unitLabel->setText(unitProblemText);
+}
+
+// Button event handlers
+void View::onProblemSelectionChanged()
+{
+    QComboBox* senderCombo = qobject_cast<QComboBox*>(sender());
+    if (!senderCombo) return;
+    
+    int unitIndex = senderCombo->property("unitIndex").toInt();
+    int problemIndex = senderCombo->currentIndex() - 1; // -1 because first item is "-- Choose a problem --"
+    
+    if (problemIndex >= 0) {
+        // For first 3 problems, show MultipleChoiceWindow
+        if (problemIndex < 3) {
+            showMultipleChoiceWindow(unitIndex, problemIndex);
+        } else {
+            // For problems 4+, show ScanWindow
+            showScanWindow(unitIndex, problemIndex);
+        }
+        emit problemSelected(unitIndex, problemIndex);
+    }
+}
+
+void View::onBackButtonClicked()
+{
+    // Close the current dialog and restore previous state
+    QDialog* currentDialog = nullptr;
+    
+    switch (currentWindow) {
+        case WindowType::MultipleChoiceWindow:
+            currentDialog = multipleChoiceWindow;
+            break;
+        case WindowType::SettingsWindow:
+            currentDialog = settingsWindow;
+            break;
+        case WindowType::ScanWindow:
+            currentDialog = scanWindow;
+            break;
+        case WindowType::TheoryWindow:
+            currentDialog = theoryWindow;
+            break;
+        default:
+            break;
+    }
+    
+    if (currentDialog) {
+        // Restore the previous window state
+        currentWindow = previousWindow;
+        currentDialog->accept(); // Close the dialog
+    }
+    
+    emit backButtonClicked();
+}
+
+void View::onSettingsButtonClicked()
+{
+    showSettingsWindow(currentWindow);
+    emit settingsButtonClicked();
+}
+
+void View::onScanButtonClicked()
+{
+    qDebug() << "Scan button clicked - Camera functionality would be implemented here";
+    emit scanButtonClicked();
+}
+
+void View::onTheoryButtonClicked()
+{
+    showTheoryWindow(currentUnitIndex, currentProblemIndex, currentWindow);
+    emit theoryButtonClicked();
+}
+
+void View::onChoiceButtonClicked()
+{
+    QPushButton* clickedButton = qobject_cast<QPushButton*>(sender());
+    if (!clickedButton || !multipleChoiceUI) return;
+    
+    int choiceIndex = -1;
+    if (clickedButton == multipleChoiceUI->choiceButton1) choiceIndex = 0;
+    else if (clickedButton == multipleChoiceUI->choiceButton2) choiceIndex = 1;
+    else if (clickedButton == multipleChoiceUI->choiceButton3) choiceIndex = 2;
+    else if (clickedButton == multipleChoiceUI->choiceButton4) choiceIndex = 3;
+    
+    if (choiceIndex >= 0) {
+        // Disable all buttons
+        setChoiceButtonsEnabled(false);
+        
+        // Highlight correct choice
+        highlightCorrectChoice(correctChoiceIndex);
+        
+        qDebug() << "Choice selected:" << choiceIndex << "Correct:" << correctChoiceIndex;
+        emit choiceSelected(choiceIndex);
+    }
+}
+
+// Helper methods
+void View::setChoiceButtonsEnabled(bool enabled)
+{
+    if (!multipleChoiceUI) return;
+    
+    multipleChoiceUI->choiceButton1->setEnabled(enabled);
+    multipleChoiceUI->choiceButton2->setEnabled(enabled);
+    multipleChoiceUI->choiceButton3->setEnabled(enabled);
+    multipleChoiceUI->choiceButton4->setEnabled(enabled);
+}
+
+void View::highlightCorrectChoice(int choiceIndex)
+{
+    if (!multipleChoiceUI) return;
+    
+    QPushButton* correctButton = nullptr;
+    switch (choiceIndex) {
+        case 0: correctButton = multipleChoiceUI->choiceButton1; break;
+        case 1: correctButton = multipleChoiceUI->choiceButton2; break;
+        case 2: correctButton = multipleChoiceUI->choiceButton3; break;
+        case 3: correctButton = multipleChoiceUI->choiceButton4; break;
+    }
+    
+    if (correctButton) {
+        QString greenStyle = correctButton->styleSheet() + 
+            "\nQPushButton { border: 3px solid rgb(0, 255, 0); background-color: rgb(0, 150, 0); }";
+        correctButton->setStyleSheet(greenStyle);
+    }
+}
+
+void View::resetChoiceButtonStyles()
+{
+    if (!multipleChoiceUI) return;
+    
+    // Define the original button style (from the UI file)
+    QString originalStyle = 
+        "QPushButton {\n"
+        "    border: 2px solid rgb(255, 140, 0);\n"
+        "    border-radius: 5px;\n"
+        "    padding: 6px;\n"
+        "    color: rgb(255, 140, 0);\n"
+        "    background-color: rgb(80, 40, 120);\n"
+        "}";
+    
+    // Reset all choice buttons to original style
+    multipleChoiceUI->choiceButton1->setStyleSheet(originalStyle);
+    multipleChoiceUI->choiceButton2->setStyleSheet(originalStyle);
+    multipleChoiceUI->choiceButton3->setStyleSheet(originalStyle);
+    multipleChoiceUI->choiceButton4->setStyleSheet(originalStyle);
+}
+
+// Main window methods (keeping existing functionality)
 void View::refreshUnits()
 {
     if (!model) return;
@@ -126,19 +497,6 @@ void View::updateUnitProblems(int unitIndex)
             QStringList problems = model->getProblemsForUnit(unitIndex);
             combo->addItems(problems);
         }
-    }
-}
-
-void View::onProblemSelectionChanged()
-{
-    QComboBox* senderCombo = qobject_cast<QComboBox*>(sender());
-    if (!senderCombo) return;
-    
-    int unitIndex = senderCombo->property("unitIndex").toInt();
-    int problemIndex = senderCombo->currentIndex() - 1; // -1 because first item is "-- Choose a problem --"
-    
-    if (problemIndex >= 0) {
-        emit problemSelected(unitIndex, problemIndex);
     }
 }
 

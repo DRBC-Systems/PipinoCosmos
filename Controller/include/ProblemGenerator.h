@@ -1,0 +1,65 @@
+#ifndef PROBLEMGENERATOR_H
+#define PROBLEMGENERATOR_H
+
+#include <QObject>
+#include <QString>
+#include <QJsonObject>
+#include <QJsonArray>
+#include "AIService.h"
+#include "../Model/include/Model.h"
+
+// Struct for generated problems with optional multiple choice
+struct GeneratedProblem {
+    QString problemStatement;
+    QVector<MultipleChoiceOption> choices; // Empty if not multiple choice
+    bool isMultipleChoice;
+    
+    GeneratedProblem(const QString& statement = "") 
+        : problemStatement(statement), isMultipleChoice(false) {}
+        
+    GeneratedProblem(const QString& statement, const QVector<MultipleChoiceOption>& options)
+        : problemStatement(statement), choices(options), isMultipleChoice(true) {}
+};
+
+class ProblemGenerator : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit ProblemGenerator(QObject *parent = nullptr);
+    
+    // Set the model reference to get current problem and difficulty
+    void setModel(Model* model);
+    
+    // Generate problem based on current model selection
+    void generateProblem();
+    
+    // Generate problem with specific parameters (for testing/manual use)
+    void generateProblem(const QString& problemType, const QString& difficulty);
+    
+    // Synchronous version that blocks and returns the generated problem
+    QString generateProblemSync(const QString& problemType, const QString& difficulty);
+    
+    // Generate complete problem with multiple choice options when appropriate
+    GeneratedProblem generateCompleteProblemSync(const QString& problemType, const QString& difficulty, bool forceMultipleChoice = false);
+
+signals:
+    void problemGenerated(const QString& problem);
+    void errorOccurred(const QString& error);
+
+private slots:
+    void handleAIResponse(const QString& response);
+    void handleAIError(const QString& error);
+
+private:
+    AIService* aiService;
+    Model* model;
+    
+    // Helper methods
+    QString createPrompt(const QString& problemType, const QString& difficulty);
+    QString createMultipleChoicePrompt(const QString& problemType, const QString& difficulty);
+    QString extractProblemFromResponse(const QString& response);
+    GeneratedProblem parseMultipleChoiceResponse(const QString& response);
+};
+
+#endif // PROBLEMGENERATOR_H
