@@ -19,6 +19,8 @@
 #include "ui_SettingsWindow.h"
 #include "ui_ScanWindow.h"
 #include "ui_TheoryWindow.h"
+#include "ui_ScanResultWindow.h"
+#include "ui_ScanReviewWindow.h"
 
 class Model;
 class Controller;
@@ -28,6 +30,8 @@ enum class WindowType {
     MultipleChoiceWindow,
     SettingsWindow,
     ScanWindow,
+    ScanResultWindow,
+    ScanReviewWindow,
     TheoryWindow
 };
 
@@ -41,12 +45,16 @@ public:
     
     void setController(Controller* controller);
     void setModel(Model* model);
+    // Public refresh to update MC content after async AI generation
+    void refreshMultipleChoice(int unitIndex, int problemIndex);
     
     // Window navigation methods
     void showMainWindow();
     void showMultipleChoiceWindow(int unitIndex, int problemIndex);
     void showSettingsWindow(WindowType previousWindow);
     void showScanWindow(int unitIndex, int problemIndex);
+    void showScanResultWindow(const QString& ocrResult);
+    void showScanReviewWindow(const QString& gradingResult);
     void showTheoryWindow(int unitIndex, int problemIndex, WindowType previousWindow);
     
     // UI update methods
@@ -65,9 +73,17 @@ private slots:
     void onProblemSelectionChanged();
     void onBackButtonClicked();
     void onSettingsButtonClicked();
+    void onMainSettingsButtonClicked();
     void onScanButtonClicked();
     void onTheoryButtonClicked();
     void onChoiceButtonClicked();
+    void onDifficultyChanged(int index);
+    
+    // Scan workflow slots
+    void onScanResultBackButtonClicked();
+    void onScanResultNextButtonClicked();
+    void onScanReviewBackButtonClicked();
+    void onScanReviewMenuButtonClicked();
 
 private:
     // UI objects for all windows
@@ -76,12 +92,16 @@ private:
     Ui::SettingsWindow *settingsUI;
     Ui::ScanWindow *scanUI;
     Ui::TheoryWindow *theoryUI;
+    Ui::scanConfirmWindow *scanResultUI;
+    Ui::scanReviewWindow *scanReviewUI;
     
     // Dialog widgets
     QDialog *multipleChoiceWindow;
     QDialog *settingsWindow;
     QDialog *scanWindow;
     QDialog *theoryWindow;
+    QDialog *scanResultWindow;
+    QDialog *scanReviewWindow;
     
     Controller* controller;
     Model* model;
@@ -92,6 +112,12 @@ private:
     int currentUnitIndex;
     int currentProblemIndex;
     int correctChoiceIndex;
+    
+    // Scan workflow state
+    QString currentScanImagePath;
+    QString currentOcrResult;
+    QString currentProblemStatement;
+    QString currentGradingResult;
     
     // Main window components
     QVBoxLayout* unitsLayout;
@@ -104,6 +130,8 @@ private:
     void setupMultipleChoiceWindow();
     void setupSettingsWindow();
     void setupScanWindow();
+    void setupScanResultWindow();
+    void setupScanReviewWindow();
     void setupTheoryWindow();
     void connectSignals();
     
@@ -118,6 +146,7 @@ private:
     void populateMultipleChoiceWindow(int unitIndex, int problemIndex);
     void setChoiceButtonsEnabled(bool enabled);
     void highlightCorrectChoice(int choiceIndex);
+    void resetChoiceButtonStyles();
     
     // Content population methods
     void populateTheoryWindow(int unitIndex, int problemIndex);

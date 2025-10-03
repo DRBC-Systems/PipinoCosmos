@@ -50,13 +50,42 @@
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QLabel" name="pipinoIcon">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>70</y>
+      <width>60</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QLabel {
+    border: 2px solid rgb(255, 140, 0);
+    border-radius: 30px;
+    background-color: rgb(80, 40, 120);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>../../Assets/pipingo_Icon.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
    <widget class="QLabel" name="instructionLabel">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>130</x>
       <y>80</y>
-      <width>460</width>
-      <height>80</height>
+      <width>340</width>
+      <height>50</height>
      </rect>
     </property>
     <property name="font">
@@ -84,59 +113,98 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QFrame" name="scanFrame">
+   <widget class="QScrollArea" name="scrollArea">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>180</y>
+      <y>140</y>
       <width>460</width>
-      <height>280</height>
+      <height>330</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QFrame {
-    border: 3px dashed rgb(255, 140, 0);
+     <string notr="true">QScrollArea {
+    border: 3px solid rgb(255, 140, 0);
     border-radius: 10px;
     background-color: rgb(60, 25, 70);
+}
+
+QScrollBar:vertical {
+    border: none;
+    background: rgb(80, 40, 120);
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: rgb(255, 140, 0);
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: rgb(255, 160, 40);
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
 }</string>
     </property>
-    <property name="frameShape">
-     <enum>QFrame::Shape::StyledPanel</enum>
+    <property name="widgetResizable">
+     <bool>false</bool>
     </property>
-    <property name="frameShadow">
-     <enum>QFrame::Shadow::Raised</enum>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
     </property>
-    <widget class="QLabel" name="scanPlaceholder">
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAsNeeded</enum>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
      <property name="geometry">
       <rect>
-       <x>50</x>
-       <y>80</y>
-       <width>360</width>
-       <height>120</height>
+       <x>0</x>
+       <y>0</y>
+       <width>441</width>
+       <height>2000</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Comic Sans MS</family>
-       <pointsize>18</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
+     <widget class="QLabel" name="scanProblemLabel">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>441</width>
+        <height>2000</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Comic Sans MS</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLabel {
     border: none;
-    color: rgb(200, 120, 50);
+    padding: 10px;
+    color: white;
     background-color: transparent;
 }</string>
-     </property>
-     <property name="text">
-      <string>📸
-
-Tap "Scan" to capture
-your problem</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
-     </property>
+      </property>
+      <property name="text">
+       <string>AI-generated problem will appear here...</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QPushButton" name="scanButton">

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>scanConfirmWindow</class>
- <widget class="QDialog" name="scanConfirmWindow">
+ <class>scanChatWindow</class>
+ <widget class="QDialog" name="scanChatWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>481</width>
+    <width>480</width>
     <height>640</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@
     background-color: rgb(52, 21, 57);
 }</string>
    </property>
-   <widget class="QLabel" name="scanResultTitleLabel">
+   <widget class="QLabel" name="chatTitleLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -57,105 +57,11 @@
 }</string>
     </property>
     <property name="text">
-     <string>Scan Result</string>
+     <string>Scan Chat Review</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
-   </widget>
-   <widget class="QScrollArea" name="scrollArea">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>110</y>
-      <width>460</width>
-      <height>461</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QScrollArea {
-    border: 2px solid rgb(255, 140, 0);
-    border-radius: 5px;
-    background-color: rgb(80, 40, 120);
-}
-
-QScrollBar:vertical {
-    border: none;
-    background: rgb(60, 25, 70);
-    width: 12px;
-    border-radius: 6px;
-}
-
-QScrollBar::handle:vertical {
-    background: rgb(255, 140, 0);
-    border-radius: 6px;
-    min-height: 20px;
-}
-
-QScrollBar::handle:vertical:hover {
-    background: rgb(255, 160, 40);
-}
-
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-    height: 0px;
-}
-
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-    background: none;
-}</string>
-    </property>
-    <property name="widgetResizable">
-     <bool>false</bool>
-    </property>
-    <property name="horizontalScrollBarPolicy">
-     <enum>Qt::ScrollBarAlwaysOff</enum>
-    </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarAsNeeded</enum>
-    </property>
-    <widget class="QWidget" name="scrollAreaWidgetContents">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>441</width>
-       <height>2000</height>
-      </rect>
-     </property>
-     <widget class="QLabel" name="scanResultLabel">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>441</width>
-        <height>2000</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Calibri</family>
-        <pointsize>14</pointsize>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">QLabel {
-    border: none;
-    padding: 10px;
-    color: white;
-    background-color: transparent;
-}</string>
-      </property>
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;x+5=5&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-      </property>
-      <property name="wordWrap">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
    </widget>
    <widget class="QPushButton" name="backButton">
     <property name="geometry">
@@ -182,10 +88,10 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
     </property>
     <property name="text">
-     <string>❌</string>
+     <string>←</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="nextButton">
+   <widget class="QPushButton" name="menuButton">
     <property name="geometry">
      <rect>
       <x>245</x>
@@ -196,7 +102,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     </property>
     <property name="font">
      <font>
-      <family>Calibri</family>
+      <family>Comic Sans MS</family>
       <pointsize>22</pointsize>
      </font>
     </property>
@@ -210,7 +116,73 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
     </property>
     <property name="text">
-     <string>✅</string>
+     <string>MENU</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="promptEdit">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>470</y>
+      <width>381</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border-radius: 5px;
+    padding: 6px;
+    color: white;                 /* white text */
+    background-color: rgb(80, 40, 120);      /* darker purple background */
+}</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="chatEdit">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>460</width>
+      <height>351</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextEdit {
+    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border-radius: 5px;
+    padding: 6px;
+    color: white;                 /* white text */
+    background-color: rgb(80, 40, 120);      /* darker purple background */
+}</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="sendButton">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>470</y>
+      <width>70</width>
+      <height>100</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Comic Sans MS</family>
+      <pointsize>28</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    border: 2px solid rgb(255, 140, 0);       /* darker purple border */
+    border-radius: 5px;
+    padding: 6px;
+    color: rgb(255, 140, 0);                 /* orange text */
+    background-color: rgb(80, 40, 120);      /* darker purple background */
+}</string>
+    </property>
+    <property name="text">
+     <string>⌯⌲</string>
     </property>
    </widget>
   </widget>

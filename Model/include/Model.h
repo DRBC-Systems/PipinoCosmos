@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QVector>
 #include <QObject>
+#include "OcrScanner.h"
 
 struct MultipleChoiceOption {
     QString text;
@@ -58,6 +59,11 @@ public:
     void removeProblemFromUnit(int unitIndex, int problemIndex);
     QStringList getProblemsForUnit(int unitIndex) const;
     
+    // Update problem content (for AI-generated problems)
+    void updateProblemContent(int unitIndex, int problemIndex, 
+                             const QString& problemStatement, 
+                             const QVector<MultipleChoiceOption>& choices);
+    
     // Initialize with sample data
     void initializeSampleData();
     
@@ -71,6 +77,19 @@ public:
     QString unitProblemToString(int unitIndex, int problemIndex) const;
     std::string qStringToStdString(const QString& qstr) const;
     QString stdStringToQString(const std::string& str) const;
+    
+    // Current selection methods - returns currently selected problem and difficulty
+    std::string getCurrentProblem() const;    // Returns the name of the currently selected problem
+    std::string getCurrentDifficulty() const; // Returns the USER'S difficulty setting (from settings)
+    bool isCurrentProblemMultipleChoice() const; // Returns true if current problem is multiple choice, false otherwise
+    void setCurrentSelection(int unitIndex, int problemIndex); // Sets the current selection
+    
+    // User settings methods
+    void setUserDifficulty(const QString& difficulty); // Sets the user's difficulty preference
+    QString getUserDifficulty() const; // Gets the user's difficulty preference as QString
+    
+    // OCR methods
+    QString scanImage(const QString& imagePath); // Scans an image and returns OCR text
 
 signals:
     void unitsChanged();
@@ -78,6 +97,16 @@ signals:
 
 private:
     QVector<Unit> units;
+    
+    // Current selection tracking
+    int currentUnitIndex;    // Currently selected unit index (-1 if none selected)
+    int currentProblemIndex; // Currently selected problem index (-1 if none selected)
+    
+    // User settings
+    QString userDifficultySetting; // User's chosen difficulty setting ("Easy", "Medium", "Hard")
+    
+    // OCR scanner instance
+    OcrScanner ocrScanner;
 };
 
 #endif // MODEL_H

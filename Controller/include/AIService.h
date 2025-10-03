@@ -6,6 +6,10 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
+#include <QFileInfo>
+#include <QHttpMultiPart>
+#include <QFile>
 
 class AIService : public QObject
 {
@@ -19,9 +23,17 @@ public:
     void embeddings(const QString &text);
     void rag(const QString &query);
 
+    // OCR endpoints
+    void ocr(const QString &imagePath);                          // async
+    QString ocrSync(const QString &imagePath, int timeoutMs = 10000); // blocking
+
+    // Synchronous method that blocks and returns response
+    QString promptSync(const QString &message, int timeoutMs = 10000);
+
 signals:
     void finished(const QString &response);
     void errorOccurred(const QString &error);
+
 private slots:
     void handleReply(QNetworkReply *reply);
 

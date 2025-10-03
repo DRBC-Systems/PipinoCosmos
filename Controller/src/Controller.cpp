@@ -1,20 +1,31 @@
 #include "Controller.h"
 #include "Model.h"
 #include "View.h"
+#include "ProblemGenerator.h"
 #include <QDateTime>
+#include <QMessageBox>
+#include <QApplication>
 
 Controller::Controller(QObject *parent)
     : QObject(parent)
     , model(nullptr)
     , view(nullptr)
+    , problemGenerator(nullptr)
     , currentUnitIndex(-1)
     , currentProblemIndex(-1)
 {
+    // Initialize ProblemGenerator
+    problemGenerator = new ProblemGenerator(this);
 }
 
 void Controller::setModel(Model* mdl)
 {
     model = mdl;
+    
+    // Set the model for the problem generator
+    if (problemGenerator && model) {
+        problemGenerator->setModel(model);
+    }
 }
 
 void Controller::setView(View* vw)
@@ -42,21 +53,75 @@ void Controller::handleProblemSelection(int unitIndex, int problemIndex)
     currentUnitIndex = unitIndex;
     currentProblemIndex = problemIndex;
     
+    // Update the Model's current selection so getCurrentProblem() and getCurrentDifficulty() work
+    model->setCurrentSelection(unitIndex, problemIndex);
+    
     const Unit* unit = model->getUnit(unitIndex);
     if (unit && problemIndex >= 0 && problemIndex < unit->problems.size()) {
         const Problem& problem = unit->problems[problemIndex];
         
         QString logDetails = QString("Unit: %1, Problem: %2, Difficulty: %3")
-                           .arg(unit->name, problem.name, problem.difficulty);
+                           .arg(unit->name, problem.name, model->getUserDifficulty());
         
         if (problemIndex < 3) {
-            // First 3 problems use MultipleChoiceWindow
+            // First 3 problems use MultipleChoiceWindow - Generate AI problem without popups
             logUserAction("Multiple Choice Problem Selected", logDetails);
             qDebug() << "Opening Multiple Choice for:" << problem.name;
+            
+            if (problemGenerator) {
+                qDebug() << "🤖 Generating AI problem for:" << problem.name;
+                qDebug() << "   Topic:" << problem.name;
+                qDebug() << "   Difficulty:" << model->getUserDifficulty();
+                
+                // Generate the problem synchronously (no UI popups)
+                GeneratedProblem generatedProblem = problemGenerator->generateCompleteProblemSync(
+                    problem.name, 
+                    model->getUserDifficulty(),
+                    true
+                );
+                
+                // Update the model only if valid MC content exists
+                if (generatedProblem.isMultipleChoice && !generatedProblem.choices.isEmpty()) {
+                    model->updateProblemContent(unitIndex, problemIndex, 
+                                               generatedProblem.problemStatement,
+                                               generatedProblem.choices);
+                    // Ask the view to refresh the visible content if it's open
+                    if (view) {
+                        view->refreshMultipleChoice(unitIndex, problemIndex);
+                    }
+                }
+            }
         } else {
-            // Problems 4+ use ScanWindow
+            // Problems 4+ use ScanWindow - Generate non-MC problem statement
             logUserAction("Scan Problem Selected", logDetails);
             qDebug() << "Opening Scan Window for:" << problem.name;
+            
+            if (problemGenerator) {
+                qDebug() << "🤖 Generating AI problem (non-MC) for:" << problem.name;
+                qDebug() << "   Topic:" << problem.name;
+                qDebug() << "   Difficulty:" << model->getUserDifficulty();
+                
+                // Generate problem without forcing multiple choice
+                GeneratedProblem generatedProblem = problemGenerator->generateCompleteProblemSync(
+                    problem.name, 
+                    model->getUserDifficulty(),
+                    false  // Don't force multiple choice for scan problems
+                );
+                
+                // Update the model with the generated problem statement
+                if (!generatedProblem.problemStatement.isEmpty() && 
+                    !generatedProblem.problemStatement.startsWith("Error:") &&
+                    !generatedProblem.problemStatement.startsWith("Timeout:")) {
+                    // Create empty choices for scan problems
+                    QVector<MultipleChoiceOption> emptyChoices;
+                    model->updateProblemContent(unitIndex, problemIndex, 
+                                               generatedProblem.problemStatement,
+                                               emptyChoices);
+                    qDebug() << "✅ Generated scan problem successfully";
+                } else {
+                    qDebug() << "⚠️ Failed to generate scan problem:" << generatedProblem.problemStatement;
+                }
+            }
         }
     }
 }
