@@ -41,8 +41,10 @@ OcrScanner::OcrScanner() {
 }
 
 OcrScanner::~OcrScanner() {
-    api->End();
-    delete api;
+    if (tess) {
+        tess->End();
+        delete tess;
+    }
 }
 
 QString OcrScanner::scanImage(const QString &filePath) {
