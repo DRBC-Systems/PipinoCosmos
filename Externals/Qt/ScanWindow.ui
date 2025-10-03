@@ -113,7 +113,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QFrame" name="scanFrame">
+   <widget class="QLabel" name="scanProblemLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -122,51 +122,30 @@
       <height>280</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Comic Sans MS</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="styleSheet">
-     <string notr="true">QFrame {
-    border: 3px dashed rgb(255, 140, 0);
+     <string notr="true">QLabel {
+    border: 3px solid rgb(255, 140, 0);
     border-radius: 10px;
+    padding: 10px;
+    color: white;
     background-color: rgb(60, 25, 70);
 }</string>
     </property>
-    <property name="frameShape">
-     <enum>QFrame::Shape::StyledPanel</enum>
+    <property name="text">
+     <string>AI-generated problem will appear here...</string>
     </property>
-    <property name="frameShadow">
-     <enum>QFrame::Shadow::Raised</enum>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
     </property>
-    <widget class="QLabel" name="scanPlaceholder">
-     <property name="geometry">
-      <rect>
-       <x>50</x>
-       <y>80</y>
-       <width>360</width>
-       <height>120</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Comic Sans MS</family>
-       <pointsize>18</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-    border: none;
-    color: rgb(200, 120, 50);
-    background-color: transparent;
-}</string>
-     </property>
-     <property name="text">
-      <string>📸
-
-Tap "Scan" to capture
-your problem</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
-     </property>
-    </widget>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QPushButton" name="scanButton">
     <property name="geometry">

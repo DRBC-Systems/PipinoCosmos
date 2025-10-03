@@ -1,9 +1,12 @@
 #include "View.h"
 #include "Model.h"
 #include "Controller.h"
+#include "SolutionGrader.h"
 #include <QApplication>
 #include <QDebug>
 #include <QTimer>
+#include <QFileDialog>
+#include <QMessageBox>
 
 View::View(QWidget *parent)
     : QMainWindow(parent)
@@ -12,10 +15,14 @@ View::View(QWidget *parent)
     , settingsUI(nullptr)
     , scanUI(nullptr)
     , theoryUI(nullptr)
+    , scanResultUI(nullptr)
+    , scanReviewUI(nullptr)
     , multipleChoiceWindow(nullptr)
     , settingsWindow(nullptr)
     , scanWindow(nullptr)
     , theoryWindow(nullptr)
+    , scanResultWindow(nullptr)
+    , scanReviewWindow(nullptr)
     , controller(nullptr)
     , model(nullptr)
     , currentWindow(WindowType::MainWindow)
@@ -35,6 +42,8 @@ View::~View()
     delete settingsUI;
     delete scanUI;
     delete theoryUI;
+    delete scanResultUI;
+    delete scanReviewUI;
 }
 
 void View::setController(Controller* ctrl)
@@ -58,6 +67,8 @@ void View::setupUI()
     setupMultipleChoiceWindow();
     setupSettingsWindow();
     setupScanWindow();
+    setupScanResultWindow();
+    setupScanReviewWindow();
     setupTheoryWindow();
     
     connectSignals();
@@ -107,6 +118,22 @@ void View::setupScanWindow()
     scanUI->setupUi(scanWindow);
 }
 
+void View::setupScanResultWindow()
+{
+    scanResultWindow = new QDialog(this);
+    scanResultWindow->setModal(true);
+    scanResultUI = new Ui::scanConfirmWindow();
+    scanResultUI->setupUi(scanResultWindow);
+}
+
+void View::setupScanReviewWindow()
+{
+    scanReviewWindow = new QDialog(this);
+    scanReviewWindow->setModal(true);
+    scanReviewUI = new Ui::scanReviewWindow();
+    scanReviewUI->setupUi(scanReviewWindow);
+}
+
 void View::setupTheoryWindow()
 {
     theoryWindow = new QDialog(this);
@@ -141,6 +168,18 @@ void View::connectSignals()
         connect(scanUI->settingsButton, &QPushButton::clicked, this, &View::onSettingsButtonClicked);
         connect(scanUI->scanButton, &QPushButton::clicked, this, &View::onScanButtonClicked);
         connect(scanUI->theoryButton, &QPushButton::clicked, this, &View::onTheoryButtonClicked);
+    }
+    
+    // Scan Result Window signals
+    if (scanResultUI) {
+        connect(scanResultUI->backButton, &QPushButton::clicked, this, &View::onScanResultBackButtonClicked);
+        connect(scanResultUI->nextButton, &QPushButton::clicked, this, &View::onScanResultNextButtonClicked);
+    }
+    
+    // Scan Review Window signals
+    if (scanReviewUI) {
+        connect(scanReviewUI->backButton, &QPushButton::clicked, this, &View::onScanReviewBackButtonClicked);
+        connect(scanReviewUI->menuButton, &QPushButton::clicked, this, &View::onScanReviewMenuButtonClicked);
     }
     
     // Theory Window signals
@@ -200,6 +239,9 @@ void View::showScanWindow(int unitIndex, int problemIndex)
     
     populateScanWindow(unitIndex, problemIndex);
     
+    // Store the AI-generated problem statement for later use
+    currentProblemStatement = model->getProblemStatement(unitIndex, problemIndex);
+    
     // Center the dialog over the main window
     scanWindow->move(
         this->x() + (this->width() - scanWindow->width()) / 2,
@@ -207,6 +249,44 @@ void View::showScanWindow(int unitIndex, int problemIndex)
     );
     
     scanWindow->exec(); // Show as modal dialog
+}
+
+void View::showScanResultWindow(const QString& ocrResult)
+{
+    previousWindow = currentWindow;
+    currentWindow = WindowType::ScanResultWindow;
+    currentOcrResult = ocrResult;
+    
+    // Set the OCR result in the label
+    scanResultUI->scanResultLabel->setText(ocrResult);
+    scanResultUI->scanResultTitleLabel->setText("Scan Result");
+    
+    // Center the dialog
+    scanResultWindow->move(
+        this->x() + (this->width() - scanResultWindow->width()) / 2,
+        this->y() + (this->height() - scanResultWindow->height()) / 2
+    );
+    
+    scanResultWindow->exec();
+}
+
+void View::showScanReviewWindow(const QString& gradingResult)
+{
+    previousWindow = currentWindow;
+    currentWindow = WindowType::ScanReviewWindow;
+    currentGradingResult = gradingResult;
+    
+    // Set the grading result in the label
+    scanReviewUI->scanReviewLabel->setText(gradingResult);
+    scanReviewUI->scanReviewTitleLabel->setText("Solution Review");
+    
+    // Center the dialog
+    scanReviewWindow->move(
+        this->x() + (this->width() - scanReviewWindow->width()) / 2,
+        this->y() + (this->height() - scanReviewWindow->height()) / 2
+    );
+    
+    scanReviewWindow->exec();
 }
 
 void View::showTheoryWindow(int unitIndex, int problemIndex, WindowType prevWindow)
@@ -287,6 +367,14 @@ void View::populateScanWindow(int unitIndex, int problemIndex)
     
     QString unitProblemText = model->unitProblemToString(unitIndex, problemIndex);
     scanUI->unitLabel->setText(unitProblemText);
+    
+    // Display AI-generated problem statement
+    QString problemStatement = model->getProblemStatement(unitIndex, problemIndex);
+    if (problemStatement.isEmpty() || problemStatement == "Problem not found") {
+        scanUI->scanProblemLabel->setText("AI-generated problem will appear here...");
+    } else {
+        scanUI->scanProblemLabel->setText(problemStatement);
+    }
 }
 
 // Button event handlers
@@ -299,17 +387,19 @@ void View::onProblemSelectionChanged()
     int problemIndex = senderCombo->currentIndex() - 1; // -1 because first item is "-- Choose a problem --"
     
     if (problemIndex >= 0) {
+        // Trigger AI generation first for all problems
+        emit problemSelected(unitIndex, problemIndex);
+        
         if (problemIndex < 3) {
-            // Trigger AI generation first, then show window
-            emit problemSelected(unitIndex, problemIndex);
-            
-            // Use QTimer to allow AI to start before blocking with exec()
+            // Use QTimer to allow AI to generate before showing MC window
             QTimer::singleShot(100, this, [this, unitIndex, problemIndex]() {
                 showMultipleChoiceWindow(unitIndex, problemIndex);
             });
         } else {
-            // Scan window is independent; do not emit selection/problem event
-            showScanWindow(unitIndex, problemIndex);
+            // For scan window, also wait for AI generation to complete
+            QTimer::singleShot(100, this, [this, unitIndex, problemIndex]() {
+                showScanWindow(unitIndex, problemIndex);
+            });
         }
     }
 }
@@ -353,7 +443,37 @@ void View::onSettingsButtonClicked()
 
 void View::onScanButtonClicked()
 {
-    qDebug() << "Scan button clicked - Camera functionality would be implemented here";
+    // Open file dialog to select .png file
+    QString fileName = QFileDialog::getOpenFileName(
+        scanWindow,
+        tr("Select Image"),
+        "",
+        tr("PNG Files (*.png)")
+    );
+    
+    if (fileName.isEmpty()) {
+        return; // User cancelled
+    }
+    
+    currentScanImagePath = fileName;
+    
+    // Call OCR scanner through model
+    if (!model) {
+        QMessageBox::warning(scanWindow, tr("Error"), tr("Model not initialized!"));
+        return;
+    }
+    
+    QString ocrResult = model->scanImage(fileName);
+    
+    if (ocrResult.isEmpty()) {
+        QMessageBox::warning(scanWindow, tr("Error"), tr("Failed to scan image!"));
+        return;
+    }
+    
+    // Close scan window and show result window
+    scanWindow->accept();
+    showScanResultWindow(ocrResult);
+    
     emit scanButtonClicked();
 }
 
@@ -400,6 +520,44 @@ void View::onMainSettingsButtonClicked()
 {
     showSettingsWindow(WindowType::MainWindow);
     emit settingsButtonClicked();
+}
+
+void View::onScanResultBackButtonClicked()
+{
+    // Go back to scan window, preserving state
+    scanResultWindow->reject();
+    showScanWindow(currentUnitIndex, currentProblemIndex);
+}
+
+void View::onScanResultNextButtonClicked()
+{
+    // User confirmed OCR result, now grade the solution
+    if (!controller) {
+        QMessageBox::warning(scanResultWindow, tr("Error"), tr("Controller not initialized!"));
+        return;
+    }
+    
+    // Create a SolutionGrader instance
+    SolutionGrader grader;
+    QString gradingResult = grader.gradeSolution(currentOcrResult, currentProblemStatement);
+    
+    // Close result window and show review window
+    scanResultWindow->accept();
+    showScanReviewWindow(gradingResult);
+}
+
+void View::onScanReviewBackButtonClicked()
+{
+    // Go back to scan result window, preserving state
+    scanReviewWindow->reject();
+    showScanResultWindow(currentOcrResult);
+}
+
+void View::onScanReviewMenuButtonClicked()
+{
+    // Go back to main menu
+    scanReviewWindow->accept();
+    showMainWindow();
 }
 
 // Helper methods

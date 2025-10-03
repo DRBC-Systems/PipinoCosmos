@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QVector>
 #include <QObject>
+#include "OcrScanner.h"
 
 struct MultipleChoiceOption {
     QString text;
@@ -86,6 +87,9 @@ public:
     // User settings methods
     void setUserDifficulty(const QString& difficulty); // Sets the user's difficulty preference
     QString getUserDifficulty() const; // Gets the user's difficulty preference as QString
+    
+    // OCR methods
+    QString scanImage(const QString& imagePath); // Scans an image and returns OCR text
 
 signals:
     void unitsChanged();
@@ -100,6 +104,9 @@ private:
     
     // User settings
     QString userDifficultySetting; // User's chosen difficulty setting ("Easy", "Medium", "Hard")
+    
+    // OCR scanner instance
+    OcrScanner ocrScanner;
 };
 
 #endif // MODEL_H

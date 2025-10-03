@@ -248,6 +248,11 @@ QString Model::getUserDifficulty() const
     return userDifficultySetting;
 }
 
+QString Model::scanImage(const QString& imagePath)
+{
+    return ocrScanner.scanImage(imagePath);
+}
+
 void Model::updateProblemContent(int unitIndex, int problemIndex, 
                                  const QString& problemStatement, 
                                  const QVector<MultipleChoiceOption>& choices)

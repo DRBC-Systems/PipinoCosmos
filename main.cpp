@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
     // OCR Test
     // -----------------------------
     OcrScanner scanner;
-    QString imagePath = "/home/user/Desktop/PipinoCosmos/Assets/test.png";  // <-- Your test image
+    QString imagePath = "../Assets/test.png";  // <-- Your test image
     QString ocrResult = scanner.scanImage(imagePath);
 
     std::cout << "\n=== OCR Test ===" << std::endl;

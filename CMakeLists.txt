@@ -30,15 +30,14 @@ find_package(Qt6 REQUIRED COMPONENTS Core Network Widgets)
 
 
 
-# --- Tesseract & Leptonica ---
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(TESSERACT REQUIRED tesseract lept)
+# --- Tesseract & Leptonica (via vcpkg) ---
+find_package(Tesseract CONFIG REQUIRED)
+find_package(Leptonica CONFIG REQUIRED)
 
-if(TESSERACT_FOUND)
-    message(STATUS "Tesseract include dirs: ${TESSERACT_INCLUDE_DIRS}")
-    message(STATUS "Tesseract libraries: ${TESSERACT_LIBRARIES}")
+if(Tesseract_FOUND)
+    message(STATUS "Tesseract found via vcpkg")
 else()
-    message(FATAL_ERROR "Tesseract or Leptonica not found! Make sure libtesseract-dev and libleptonica-dev are installed.")
+    message(FATAL_ERROR "Tesseract not found! Make sure vcpkg is properly configured.")
 endif()
 
 
@@ -190,10 +189,9 @@ message(STATUS "UI files: ${UI_FILES}")
 # -------------------------------
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Add Tesseract include directories and libraries after target is created
-if(TESSERACT_FOUND)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${TESSERACT_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${TESSERACT_LIBRARIES})
+# Link Tesseract library
+if(Tesseract_FOUND)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Tesseract::libtesseract)
 endif()
 
 # -------------------------------
