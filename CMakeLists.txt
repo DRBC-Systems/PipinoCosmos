@@ -29,6 +29,19 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Network Widgets)
 
 
+
+# --- Tesseract & Leptonica ---
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(TESSERACT REQUIRED tesseract lept)
+
+if(TESSERACT_FOUND)
+    message(STATUS "Tesseract include dirs: ${TESSERACT_INCLUDE_DIRS}")
+    message(STATUS "Tesseract libraries: ${TESSERACT_LIBRARIES}")
+else()
+    message(FATAL_ERROR "Tesseract or Leptonica not found! Make sure libtesseract-dev and libleptonica-dev are installed.")
+endif()
+
+
 # If not found, try common installation paths
 if(NOT Qt6_FOUND)
     message(STATUS "Qt6 not found in standard paths, trying common installation locations...")
@@ -177,6 +190,12 @@ message(STATUS "UI files: ${UI_FILES}")
 # -------------------------------
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+# Add Tesseract include directories and libraries after target is created
+if(TESSERACT_FOUND)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${TESSERACT_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${TESSERACT_LIBRARIES})
+endif()
+
 # -------------------------------
 # Include dirs
 # -------------------------------
@@ -187,9 +206,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${PROJECT_SOURCE_DIR}/AI/include
     ${CMAKE_CURRENT_BINARY_DIR}  # For generated UI headers (ui_*.h)
 )
-
-# -------------------------------
-# Link Qt6 Widgets
 # -------------------------------
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Network Qt6::Widgets)
 

@@ -2,12 +2,13 @@
 #include "View.h"
 #include "Model.h"
 #include "Controller.h"
-#include "Example.h"   // <-- Include the Example AI test
+#include "Example.h"   // <-- AI test
 #include "ProblemGenerator.h"
+#include "AIService.h" // <-- Add AIService for OCR
 #include "SolutionGrader.h"
 #include <iostream>
-
-
+#include <QDebug>
+#include "OcrScanner.h"
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -141,6 +142,26 @@ int main(int argc, char *argv[])
         QString detailedFeedback3 = solutionGrader.getDetailedFeedback(testSolution3, testProblem3);
         std::cout << "🤖 AI Tutor: " << detailedFeedback3.toStdString() << std::endl;
     }
+  
+  // -----------------------------
+    // OCR Test
+    // -----------------------------
+    OcrScanner scanner;
+    QString imagePath = "/home/user/Desktop/PipinoCosmos/Assets/test.png";  // <-- Your test image
+    QString ocrResult = scanner.scanImage(imagePath);
+
+    std::cout << "\n=== OCR Test ===" << std::endl;
+    if (ocrResult.isEmpty()) {
+        std::cout << "OCR Failed or returned empty string." << std::endl;
+    } else {
+        std::cout << "OCR Output: " << ocrResult.toStdString() << std::endl;
+
+        // Send OCR text to AI
+        AIService ai;
+        QString response = ai.promptSync(ocrResult);
+        std::cout << "AI Response: " << response.toStdString() << std::endl;
+    }
+    std::cout << "================================\n" << std::endl;
 
     return app.exec();
 }
