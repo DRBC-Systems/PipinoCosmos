@@ -189,7 +189,7 @@ message(STATUS "UI files: ${UI_FILES}")
 # -------------------------------
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Link Tesseract library
+# Link Tesseract library (Leptonica is automatically included as a dependency)
 if(Tesseract_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE Tesseract::libtesseract)
 endif()

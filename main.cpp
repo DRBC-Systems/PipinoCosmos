@@ -150,12 +150,12 @@ int main(int argc, char *argv[])
     QString imagePath = "../Assets/test.png";  // <-- Your test image
     QString ocrResult = scanner.scanImage(imagePath);
 
-    // Feed `ocrText` directly to the AI service or store it in the model
+    // Feed `ocrResult` directly to the AI service or store it in the model
     AIService ai;
-    QString aiResponse = ai.promptSync(ocrText);
+    QString aiResponse = ai.promptSync(ocrResult);
 
     std::cout << "\n=== OCR Test ===" << std::endl;
-    std::cout << "Extracted Text: " << ocrText.toStdString() << std::endl;
+    std::cout << "Extracted Text: " << ocrResult.toStdString() << std::endl;
     std::cout << "AI Response: " << aiResponse.toStdString() << std::endl;
     std::cout << "================================\n" << std::endl;
     std::cout << "================================\n" << std::endl;

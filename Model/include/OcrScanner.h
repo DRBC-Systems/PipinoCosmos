@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <tesseract/baseapi.h>
-#include <allheaders.h>
+#include <leptonica/allheaders.h>
 
 class OcrScanner {
 public:

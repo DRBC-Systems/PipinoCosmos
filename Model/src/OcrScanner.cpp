@@ -4,7 +4,7 @@
 #include <QCoreApplication>
 
 OcrScanner::OcrScanner() {
-    api = new tesseract::TessBaseAPI();
+    tess = new tesseract::TessBaseAPI();
     
     // Try to find tessdata directory
     QStringList tessdataPaths = {
@@ -20,7 +20,7 @@ OcrScanner::OcrScanner() {
         QDir dir(path);
         if (dir.exists()) {
             qDebug() << "Trying tessdata path:" << path;
-            if (api->Init(path.toStdString().c_str(), "eng") == 0) {
+            if (tess->Init(path.toStdString().c_str(), "eng") == 0) {
                 qDebug() << "Tesseract initialized successfully with path:" << path;
                 initialized = true;
                 break;
@@ -30,7 +30,7 @@ OcrScanner::OcrScanner() {
     
     if (!initialized) {
         qWarning() << "Could not initialize tesseract. Trying with nullptr...";
-        if (api->Init(nullptr, "eng") != 0) {
+        if (tess->Init(nullptr, "eng") != 0) {
             qWarning() << "Tesseract initialization failed completely!";
             qWarning() << "Please ensure tessdata folder is in one of these locations:";
             for (const QString& path : tessdataPaths) {
@@ -49,7 +49,7 @@ OcrScanner::~OcrScanner() {
 
 QString OcrScanner::scanImage(const QString &filePath) {
     // Check if API is properly initialized
-    if (!api) {
+    if (!tess) {
         qWarning() << "Tesseract API is not initialized!";
         return "OCR Error: Tesseract not initialized";
     }
@@ -62,8 +62,8 @@ QString OcrScanner::scanImage(const QString &filePath) {
         return "OCR Error: Could not open image file";
     }
 
-    api->SetImage(image);
-    char *outText = api->GetUTF8Text();
+    tess->SetImage(image);
+    char *outText = tess->GetUTF8Text();
     
     if (!outText) {
         qWarning() << "OCR failed to extract text from image";
@@ -78,4 +78,8 @@ QString OcrScanner::scanImage(const QString &filePath) {
     pixDestroy(&image);
 
     return result.isEmpty() ? "OCR Error: No text detected in image" : result;
+}
+
+QString OcrScanner::getTextFromImage(const QString &filePath) {
+    return scanImage(filePath);
 }

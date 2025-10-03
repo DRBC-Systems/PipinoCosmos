@@ -146,7 +146,13 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 }</string>
     </property>
     <property name="widgetResizable">
-     <bool>true</bool>
+     <bool>false</bool>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarAsNeeded</enum>
     </property>
     <widget class="QWidget" name="scrollAreaWidgetContents">
      <property name="geometry">
